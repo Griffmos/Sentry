@@ -1,13 +1,16 @@
 import cv2
 import numpy
+import time
 #using https://www.youtube.com/watch?v=FygLqV15TxQ&ab_channel=NicholasRenotte as reference
 
 cap = cv2.VideoCapture(0)
 
 DELTA = 50
 
-cap.set(cv2.CAP_PROP_FRAME_WIDTH, 64)
-cap.set(cv2.CAP_PROP_FRAME_HEIGHT,48)
+SHOWFEED = False
+
+# cap.set(cv2.CAP_PROP_FRAME_WIDTH, 64)
+# cap.set(cv2.CAP_PROP_FRAME_HEIGHT,48)
 
 ret, lastFrame = cap.read()
 
@@ -24,12 +27,18 @@ def isDifferent(currPixel, lastPixel, DELTA):
    else:
     return False
 
+def showFrame(frame):
+    cv2.imshow('Feed', frame)
 
 #shows video
 
 targetPoint: list
 
 isTarget=False
+
+numFrames=0
+
+lastTime = time.time()
 
 while(True): 
 
@@ -43,7 +52,8 @@ while(True):
             #     frame[r][c]=[0,0,0] 
             if (isDifferent(frame[r][c], lastFrame[r][c], DELTA)):
                 lastFrame[r][c]=frame[r][c]
-                frame[r][c]=[0,0,0]
+                if (SHOWFEED):
+                    frame[r][c]=[0,0,0]
                 avgTarget=[[avgTarget[0][0]+r, avgTarget[0][1]+c], avgTarget[1]+1]
             else:
                 lastFrame[r][c]=frame[r][c]
@@ -51,13 +61,18 @@ while(True):
         isTarget=True
         targetPoint=[avgTarget[0][0]/avgTarget[1],avgTarget[0][1]/avgTarget[1]]
     if (isTarget):
-        for r in range(int(targetPoint[0])-5, int(targetPoint[0])+5):
-            for c in range(int(targetPoint[1]-5), int(targetPoint[1]+5)):
-                frame[r][c]=[255,0,0]
-    
+        if (SHOWFEED):
+            for r in range(int(targetPoint[0])-5, int(targetPoint[0])+5):
+                for c in range(int(targetPoint[1]-5), int(targetPoint[1]+5)):
+                    frame[r][c]=[255,0,0]
+            showFrame(frame)
+        else:
+            numFrames+=1
+            if (time.time()-lastTime>=1):
+                print(numFrames)
+                lastTime=time.time()
+                numFrames=0
 
-
-    cv2.imshow('frame', frame)
 
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break

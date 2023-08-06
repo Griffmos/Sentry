@@ -5,7 +5,7 @@ import time
 def do_something(t):
         print(f'sleeping for {t} sec')
         time.sleep(t)
-        return t
+        return (t,1)
 
 
 if __name__ == '__main__':
@@ -26,8 +26,7 @@ if __name__ == '__main__':
         count =0
 
         for result in results:
-            count+=result
-        print(count)       
+            print(result)       
 
     
 

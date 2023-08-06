@@ -7,7 +7,7 @@ cap = cv2.VideoCapture(0)
 
 DELTA = 50
 
-SHOWFEED = False
+SHOWFEED = True
 
 cap.set(cv2.CAP_PROP_FRAME_WIDTH, 64)
 cap.set(cv2.CAP_PROP_FRAME_HEIGHT,48)

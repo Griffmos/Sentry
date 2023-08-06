@@ -15,27 +15,34 @@ def isDifferent(currPixel, lastPixel, DELTA):
 def showFrame(frame):
     cv2.imshow('Feed', frame)
 
-def readRow(gRow, lRow, DELTA):
-        avgTarget:list
+
+DELTA = 50
+
+SHOWFEED = True
+
+SHOWFPS =True
+
+def readRow(gRow, lRow, r):
+        avgTarget=[[0,0],0]
         for c in range(len(gRow)):
             
                 if (isDifferent(gRow[c], lRow[c], DELTA)):
-                    lastFrame[r][c]=gFrame[r][c]
+                    lRow[c]=gRow[c]
                     if (SHOWFEED):
-                        gFrame[r][c]=0
+                        gRow[c]=0
                     avgTarget=[[avgTarget[0][0]+r, avgTarget[0][1]+c], avgTarget[1]+1]
                 else:
-                    lastFrame[r][c]=gFrame[r][c]
-        return avgTarget
+                    lRow[c]=gRow[c]
+        return (avgTarget, lRow)
 
 
 if __name__ == '__main__':
+    print("code initiated")
+
     cap = cv2.VideoCapture(0)
 
-    DELTA = 50
 
-    SHOWFEED = True
-    SHOWFPS =True
+
 
     cap.set(cv2.CAP_PROP_FRAME_WIDTH, 64)
     cap.set(cv2.CAP_PROP_FRAME_HEIGHT,48)
@@ -61,7 +68,6 @@ if __name__ == '__main__':
 
     avgTarget: list
 
-    gFrame:list
 
     
 
@@ -77,10 +83,16 @@ if __name__ == '__main__':
         with concurrent.futures.ProcessPoolExecutor() as executor:
             results = executor.map(readRow, gFrame[range(len(gFrame))], lastFrame[range(len(lastFrame))], range(len(gFrame)))
 
-            for avg in concurrent.futures.as_completed(results):
-                totalAvgTarget[0][0]+=avg[0][0]
-                totalAvgTarget[0][1]+=avg[0][1]
-                totalAvgTarget[1]+=avg[1]
+            row=0
+            for res in results:
+
+                lastFrame[row]=res[1]
+                row+=1
+                totalAvgTarget[0][0]+=res[0][0][0]
+                totalAvgTarget[0][1]+=res[0][0][1]
+                totalAvgTarget[1]+=res[0][1]
+
+
             
 
         if (totalAvgTarget[1]>100):

@@ -4,69 +4,36 @@ import numpy
 
 cap = cv2.VideoCapture(0)
 
+DELTA = 50
+
 cap.set(cv2.CAP_PROP_FRAME_WIDTH, 64)
 cap.set(cv2.CAP_PROP_FRAME_HEIGHT,48)
 
-ret, origFrame = cap.read()
+ret, lastFrame = cap.read()
 
-print(len(origFrame))
-print(len(origFrame[0]))
+print(len(lastFrame))
+print(len(lastFrame[0]))
 
-orig = numpy.zeros((len(origFrame), len(origFrame[0])),dtype=int)
+def isDifferent(currPixel, lastPixel, DELTA):
+   diffR = abs(int(currPixel[0])-int(lastPixel[0]))
+   diffG = abs(int(currPixel[1])-int(lastPixel[1]))
+   diffB = abs(int(currPixel[2])-int(lastPixel[2]))
 
-print(len(orig))
-print(len(orig[0]))
-
-count =0
-
-for r in range(len(orig)):
-    for c in range(len(orig[0])):
-            red:int
-            if (origFrame[r][c][0]==0):
-                red=1
-            else:
-                red= origFrame[r][c][0]
-
-            green:int
-            if (origFrame[r][c][1]==0):
-                green=1
-            else:
-                green= origFrame[r][c][1]
-
-            blue:int
-            if (origFrame[r][c][2]==0):
-                blue=1
-
-            else:
-                blue= origFrame[r][c][2]
-
-
-            # if ((int(red)*int(green)*int(blue))==0):
-            #     print(red," ",green," ",blue)
-
-            orig[r][c]=int(red)*int(green)*int(blue)
-
-            # orig[r][c]=origFrame[r][c][0]*origFrame[r][c][1]*origFrame[r][c][2]
-
-            count+=1
-print(orig)
-print(count)
-
-def isDifferent(currPixel, r, c):
-   currPixelVal:int
-   currPixelVal = int(currPixel[0])*int(currPixel[1])*int(currPixel[2])
-
-   
-
-   if (abs(currPixelVal-orig[r][c]>2000000)):
+   if (diffR+diffG+diffB>DELTA):
        return True
    else:
-        return False
+    return False
 
 
 #shows video
+
+targetPoint: list
+
+isTarget=False
+
 while(True): 
 
+    avgTarget = [[0,0],0]
 
     ret, frame = cap.read()
 
@@ -74,9 +41,20 @@ while(True):
         for c in range(len(frame[0])):
             # if (frame[r][c][0]!=origFrame[r][c][0] or  frame[r][c][1]!=origFrame[r][c][1] or frame[r][c][2]!=origFrame[r][c][2]):
             #     frame[r][c]=[0,0,0] 
-            if (isDifferent(frame[r][c],r,c)):
+            if (isDifferent(frame[r][c], lastFrame[r][c], DELTA)):
+                lastFrame[r][c]=frame[r][c]
                 frame[r][c]=[0,0,0]
-
+                avgTarget=[[avgTarget[0][0]+r, avgTarget[0][1]+c], avgTarget[1]+1]
+            else:
+                lastFrame[r][c]=frame[r][c]
+    if (avgTarget[1]>100):
+        isTarget=True
+        targetPoint=[avgTarget[0][0]/avgTarget[1],avgTarget[0][1]/avgTarget[1]]
+    if (isTarget):
+        for r in range(int(targetPoint[0])-5, int(targetPoint[0])+5):
+            for c in range(int(targetPoint[1]-5), int(targetPoint[1]+5)):
+                frame[r][c]=[255,0,0]
+    
 
 
     cv2.imshow('frame', frame)

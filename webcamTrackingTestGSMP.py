@@ -18,11 +18,11 @@ def showFrame(frame):
 
 DELTA = 50
 
-SHOWFEED = True
+SHOWFEED = False
 
 SHOWFPS =True
 
-NUM_CORES =4
+NUM_CORES =2
 
 # def readRow(gRow, lRow, r):
 #         avgTarget=[[0,0],0]

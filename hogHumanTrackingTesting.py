@@ -10,11 +10,12 @@ if __name__ == '__main__':
 
     cap = cv2.VideoCapture(0)
 
+
     out = cv2.VideoWriter(
         'output.avi',
         cv2.VideoWriter_fourcc(*'MJPG'),
         15.,
-        (640,480))
+        (160,120))
 
     while(True):
         # Capture frame-by-frame
@@ -27,7 +28,7 @@ if __name__ == '__main__':
 
         # detect people in the image
         # returns the bounding boxes for the detected objects
-        boxes, weights = hog.detectMultiScale(frame, winStride=(8,8) )
+        boxes, weights = hog.detectMultiScale(frame, hitThreshold=-0.15,winStride=(8,8),scale=1.03)
 
         boxes = numpy.array([[x, y, x + w, y + h] for (x, y, w, h) in boxes])
 

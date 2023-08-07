@@ -13,7 +13,7 @@ def isDifferent(currPixel, lastPixel, DELTA):
     return False
 
 def showFrame(frame):
-    cv2.imshow('Feed', )
+    cv2.imshow('Feed', frame)
 
 
 DELTA = 50
@@ -21,6 +21,8 @@ DELTA = 50
 SHOWFEED = True
 
 SHOWFPS =True
+
+NUM_CORES =4
 
 # def readRow(gRow, lRow, r):
 #         avgTarget=[[0,0],0]
@@ -43,14 +45,14 @@ def readRows(gFrame, lFrame):
         for c in range(len(gFrame[0])):
             if (isDifferent(gFrame[r][c], lFrame[r][c], DELTA)):
                 lFrame[r][c]=gFrame[r][c]
-            #   if (SHOWFEED):
-            #       gFrame[r][c]=0
+                if (SHOWFEED):
+                    gFrame[r][c]=0
                 rT+=r
                 cT+=c
                 total+=1
             else:
                 lFrame[r][c]=gFrame[r][c]
-    return [[rT, cT], total]
+    return [[rT, cT], total, lFrame, gFrame]
 
 if __name__ == '__main__':
     print("code initiated")
@@ -99,49 +101,41 @@ if __name__ == '__main__':
 
         ret, frame = cap.read()
 
-        gFrame=numpy.array_split(cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY),4)
+        gFrame=numpy.array_split(cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY),NUM_CORES)
 
 
         with concurrent.futures.ProcessPoolExecutor() as executor:
             #hard coded for 4 cores
-            t = executor.submit(readRows, gFrame[0], lastFrame[0])
-            m1= executor.submit(readRows, gFrame[1], lastFrame[1])
-            m2= executor.submit(readRows, gFrame[2], lastFrame[3])
-            b= executor.submit(readRows, gFrame[3], lastFrame[3])
-            print('submits done')
 
-            tRes = t.result()
-            m1Res =m1.result()
-            m2Res =m2.result()
-            bRes = b.result()
-            print('results in')
+            results = executor.map(readRows, gFrame, lastFrame) 
 
-            totalAvgTarget[0][0]=tRes[0][0]+m1Res[0][0]+m2Res[0][0]+bRes[0][0]+(rows*1.5)
-            totalAvgTarget[0][1]=tRes[0][1]+m1Res[0][1]+m2Res[0][1]+bRes[0][1]+(rows*1.5)
-            totalAvgTarget[1]=tRes[1]+m1Res[1]+m2Res[1]+bRes[1]
+            f=0
+            for res in results:
 
+                totalAvgTarget[0][0]+=res[0][0]
+                totalAvgTarget[0][1]+=res[0][1]
+                totalAvgTarget[1]+=res[1]
+                lastFrame[f]=res[2]
+                gFrame[f]=res[3]
+                f+=1
 
+        totalAvgTarget[0][0]+=rows*1.5
+        totalAvgTarget[0][1]+=cols*1.5
 
 
 
-
-
-
-
-
-
-            
+ 
 
         if (totalAvgTarget[1]>100):
             isTarget=True
             targetPoint=[totalAvgTarget[0][0]/totalAvgTarget[1],totalAvgTarget[0][1]/totalAvgTarget[1]]
         if (isTarget):
-            # if (SHOWFEED):
-            #     frame = numpy.concatenate(numpy.concatenate(gFrame[0],gFrame[1]),numpy.concatenate(gFrame[2],gFramerame[3]))
-            #     for r in range(int(targetPoint[0])-5, int(targetPoint[0])+5):
-            #         for c in range(int(targetPoint[1]-5), int(targetPoint[1]+5)):
-            #             frame[r][c]=255
-            #     showFrame(frame)
+            if (SHOWFEED):
+                sFrame=numpy.append(numpy.append(gFrame[0], gFrame[1]),numpy.append(gFrame[2],gFrame[3]))
+                for r in range(max(int(targetPoint[0])-5,0), min(int(targetPoint[0])+5, len(gFrame))):
+                    for c in range(max(int(targetPoint[1])-5,0), min(int(targetPoint[1]+5),len(gFrame[0]))):
+                        sFrame[r][c]=255
+                showFrame(sFrame)
             if(SHOWFPS):
                 numFrames+=1
                 if (time.time()-lastTime>=1):

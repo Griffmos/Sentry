@@ -4,10 +4,10 @@ import time
 
 cap = cv2.VideoCapture(0)
 
-DELTA = 50
+DELTA = 25
 
 SHOWFEED = True
-SHOWFPS =True
+SHOWFPS =False
 
 cap.set(cv2.CAP_PROP_FRAME_WIDTH, 64)
 cap.set(cv2.CAP_PROP_FRAME_HEIGHT,48)
@@ -58,13 +58,13 @@ while(True):
                 avgTarget=[[avgTarget[0][0]+r, avgTarget[0][1]+c], avgTarget[1]+1]
             else:
                 lastFrame[r][c]=gFrame[r][c]
-    if (avgTarget[1]>100):
+    if (avgTarget[1]>25):
         isTarget=True
         targetPoint=[avgTarget[0][0]/avgTarget[1],avgTarget[0][1]/avgTarget[1]]
     if (isTarget):
         if (SHOWFEED):
-            for r in range(int(targetPoint[0])-5, int(targetPoint[0])+5):
-                for c in range(int(targetPoint[1]-5), int(targetPoint[1]+5)):
+            for r in range(max(int(targetPoint[0])-5,0), min(int(targetPoint[0])+5, len(gFrame))):
+                for c in range(max(int(targetPoint[1])-5,0), min(int(targetPoint[1]+5),len(gFrame[0]))):
                     gFrame[r][c]=255
             showFrame(gFrame)
         if(SHOWFPS):

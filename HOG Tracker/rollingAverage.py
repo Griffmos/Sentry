@@ -1,6 +1,6 @@
 import numpy
 
-class rollingAvg:
+class rollingAverage:
 
     # numVals:int=0
 
@@ -11,7 +11,7 @@ class rollingAvg:
     def __init__(self, nV:int):
         self.numVals=nV
         self.vals=numpy.zeros(nV)
-        self.avg:0
+        self.avg=0
 
     def addVal(self, val:int):
         tempAvg=0

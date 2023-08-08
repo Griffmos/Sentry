@@ -7,10 +7,10 @@ import numpy as np
 import argparse
 import imutils
 import cv2
-import rollingAvg
+import rollingAverage
 
 
-rollingCenters=20 #number of centers in rolling avg
+amtRolling=10 #number of centers in rolling avg
 
 hog = cv2.HOGDescriptor()
 hog.setSVMDetector(cv2.HOGDescriptor_getDefaultPeopleDetector())
@@ -27,15 +27,15 @@ def drawCenter(x:int, y:int, frame):
 
 #shows video
 
-xRA=rollingAvg.rollingAvg(rollingCenters)
-yRA=rollingAvg.rollingAvg(rollingCenters)
+xRA=rollingAverage.rollingAverage(amtRolling)
+yRA=rollingAverage.rollingAverage(amtRolling)
 
 
-xARA=rollingAvg.rollingAvg(rollingCenters)
-xBRA=rollingAvg.rollingAvg(rollingCenters)
+xARA=rollingAverage.rollingAverage(amtRolling)
+xBRA=rollingAverage.rollingAverage(amtRolling)
 
-yARA=rollingAvg.rollingAvg(rollingCenters)
-yBRA=rollingAvg.rollingAvg(rollingCenters)
+yARA=rollingAverage.rollingAverage(amtRolling)
+yBRA=rollingAverage.rollingAverage(amtRolling)
 
 
 

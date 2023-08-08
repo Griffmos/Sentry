@@ -10,7 +10,6 @@ import cv2
 import rollingAvg
 
 
-
 rollingCenters=20 #number of centers in rolling avg
 
 hog = cv2.HOGDescriptor()

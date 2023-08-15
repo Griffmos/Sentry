@@ -1,16 +1,14 @@
 
-
+from time import sleep
 import personTracking
 
-personTracker = personTracking.tracker()
+personTracker = personTracking.tracker(True)
 
+print("finished starting person tracker")
+
+
+print("got to while loop")
 while True:
     print(personTracker.startSearch())
-
-
-
-
-
-    if 0xFF == ord("q"):
-        break
+    sleep(0.1)
 

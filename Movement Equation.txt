@@ -1,0 +1,15 @@
+DPS (Degrees per Second) = Ks * (Kp + Kd)
+Where
+Ks = a constant speed (found through testing)
+
+Kp = (currDist/origDist)*p
+	Where
+	currDist = current distance from center of screen (where gun is aiming) to target
+	origDist = original distance (when target was first found) from center of screen (where gun is aiming) to target
+	p = a constant
+(intention is to ramp speed based on how close we are getting to the target)
+
+Kd = abs(currKp-lastKp)*d
+	Where
+	d = a constant
+(intention is to add more speed by increasing the term limiting the speed so that the speed doesn't drop too fast)

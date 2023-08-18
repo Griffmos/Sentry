@@ -2,10 +2,13 @@ import cv2
 import threading
 from ultralytics import YOLO
 
+MAX_AMT_POINTS=10
+maxPointLoops=30
+
+
 
 class tracker:
 
-    
 
     def __init__(self, showFeed:bool):
         print("inited")
@@ -14,10 +17,20 @@ class tracker:
         self.currFrame=None
         self.showFeed=showFeed
 
+
+        self.points:list=[]
+
         self.currTarget=[]
 
         self.startFeed()
+    
+    def displayPoint(self, x, y):
 
+        self.points.append([x,y, 0])
+
+        if (len(self.points)>MAX_AMT_POINTS):
+            self.points.pop(0)
+            
 
 
     def runFeed(self):
@@ -25,19 +38,35 @@ class tracker:
         while self.cap.isOpened():
 
 
+
             success, frame = self.cap.read()
 
             self.currFrame=frame
 
+            
+            for i in range(len(self.points)):
+                if (len(self.points)>i):
+                    currPoint = self.points[i]
+                    if (currPoint[2]<maxPointLoops):
+                        currPoint[2]+=1
+                        x=currPoint[0]
+                        y=currPoint[1]
+                        for r in range(int(max(0,y-5)), int(min(len(self.currFrame),y+5))):
+                            for c in range(int(max(0,x-5)), int(min(len(self.currFrame),x+5))):
+                                self.currFrame[r][c]=[0,255,0]
+                    else:
+                        self.points.pop(i)
+
             if ((len(self.currTarget))>0):
                  
-                 target=self.currTarget
-                 for r in range(int(max(0,target[1]-5)), int(min(len(self.currFrame),target[1]+5))):
+                target=self.currTarget
+        
+                for r in range(int(max(0,target[1]-5)), int(min(len(self.currFrame),target[1]+5))):
                     for c in range(int(max(0,target[0]-5)), int(min(len(self.currFrame),target[0]+5))):
                         self.currFrame[r][c]=[255,0,0]
 
-            
-            
+                
+
             if (self.currFrame is not None and self.showFeed==True):
                 cv2.imshow('currFrame', self.currFrame)
 

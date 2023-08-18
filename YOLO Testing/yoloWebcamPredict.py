@@ -16,7 +16,7 @@ while cap.isOpened():
 
     if success:
         # Run YOLOv8 inference on the frame
-        results = model.predict(frame, classes=0)
+        results = model.predict(frame)
 
         #print(results)
 

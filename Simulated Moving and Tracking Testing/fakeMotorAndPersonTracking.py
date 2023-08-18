@@ -13,7 +13,15 @@ motor = fakeMotor.fakeMotor()
 print("got to while loop")
 while True:
 
+    currTarget = personTracker.startSearch()
 
-    print(personTracker.startSearch())
+    print(currTarget)
+    
+    motor.runMotor(motor.moveTo, currTarget[0])
+
+    personTracker.displayPoint(motor.currPos, currTarget[1])
+
+    if (currTarget[0]-10<motor.currPos<currTarget[0]+10):
+        print("on target!")
     sleep(0.1)
 

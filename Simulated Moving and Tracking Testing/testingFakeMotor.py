@@ -8,18 +8,17 @@ if (__name__=='__main__'):
     motor = fakeMotor.fakeMotor()
 
     print("running motor")
-    motor.runMotor(10)
+    motor.runMotor(motor.move, 180)
     print("just after runMotor")
     
-    sleep(5)
+    sleep(3)
 
     print("interrupt time!")
 
-    motor.interrupt()
 
 
 
-    motor.runMotor(-5)
+    motor.runMotor(motor.move,-90)
 
 
 

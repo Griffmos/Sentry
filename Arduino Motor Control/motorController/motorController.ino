@@ -12,6 +12,8 @@ void setup() {
 
     pinMode(8, OUTPUT);
 
+    pinMode(10, OUTPUT);
+
     Serial.begin(9600);
 
   while (!canRun){
@@ -27,55 +29,13 @@ void setup() {
 }
 
 
-int lastTime=millis();
-long currDelay=2000;
-
-int MAX_SPEED=100; //found min at 75?
-
-int MIN_SPEED=100000;
-
-// int microsDecremented=25;
-
-// int microsIncremented=25;
-
-int timeBetweenDecrements=2;
 
 
-long requestedDelay=1000;
-
-bool onOf=true;
 
 
-// long getInput(){
-//     if (Serial.available()>0){
-//       long inChar = Serial.parseInt();
-
-//       return inChar;
-//     }
-//     return -1;
-// }
 
 
-//http://www.gammon.com.au/serial
-void process_data (const char * data)
-  {
-  // for now just display it
-  // (but you could compare it to some value, convert to an integer, etc.)
-    Serial.println (data);
-    requestedDelay=atoi(data);
 
-    if (requestedDelay==-1){
-      onOf=false;
-      currDelay=100000;
-      Serial.println(currDelay);
-    }
-    else{
-      onOf=true;
-    }
-
-    
-    Serial.println(requestedDelay);
-  }  // end of process_data
 
 
 const unsigned int MAX_INPUT = 50;
@@ -113,18 +73,77 @@ void processIncomingByte (const byte inByte)
 
 
 
-int checkBadDelays(int currDelay, bool accelDir){ //true = going up in delay (down in speed), false = going down in delay (up in speed)
 
-  if (currDelay>=3100 && currDelay<=3400){
-      return accelDir ? 3300 : 2500;
+int lastTime=millis();
+long currDelay=2000;
+
+long MAX_SPEED=100; //found min at 75?
+
+long MIN_SPEED=15000;
+
+long STOP_SPEED=5000;
+
+
+int timeBetweenDecrements=2;
+
+
+long requestedDelay=1000;
+
+bool reqStop=false; //requested to stop
+
+bool onOff=true;
+
+
+bool direction=true; // true = clockwise, positive number || false = counterclockwise, negative number
+bool reqDirection=true;
+
+bool reqChangeDir=false;
+
+
+//http://www.gammon.com.au/serial
+void process_data (const char * data)
+  {
+  // for now just display it
+  // (but you could compare it to some value, convert to an integer, etc.)
+    requestedDelay=atoi(data);
+
+    if (requestedDelay==0){
+  
+      reqStop=true;
+      //requestedDelay=max(STOP_SPEED,currDelay);
+    }
+    else{
+      reqDirection = (requestedDelay>0) ? true : false;
+      
+      if (reqDirection!=direction){
+        reqChangeDir=true;
+      }
+
+      requestedDelay=abs(requestedDelay);
+
+      
+
+      onOff=true;
+    }
+
+    
+    Serial.println(requestedDelay);
+  }  // end of process_data
+
+
+
+int checkBadDelays(long currDelay, bool accelDir){ //true = going up in delay (down in speed), false = going down in delay (up in speed)
+
+  if (currDelay>=2900 && currDelay<=3500){
+      return accelDir ? 3500 : 2900;
   }
 
-  if (currDelay>=6100 && currDelay<=6400){
-      return accelDir ? 5900 : 5200;
+  if (currDelay>=6500 && currDelay<=5900){
+      return accelDir ? 6500 : 5900;
   }
 
-  if (currDelay>=9100 && currDelay<=9400){
-      return accelDir ? 8600 : 7700;
+  if (currDelay>=8900 && currDelay<=9400){
+      return accelDir ? 9400 : 8900;
   }
 
 
@@ -134,24 +153,12 @@ int checkBadDelays(int currDelay, bool accelDir){ //true = going up in delay (do
 }
 
 
-
-void loop() {
-  // put your main code here, to run repeatedly: 
-  // long currInput = getInput();
-
-  while (Serial.available () > 0){
-    processIncomingByte (Serial.read ());
-  }
-  if (onOf){
-    if (currDelay>requestedDelay){
-
-    
-
-    int currTime = millis();
+void accelerate(){
+  int currTime = millis();
 
     if (currTime-lastTime>=timeBetweenDecrements){
       lastTime=currTime;
-      currDelay-=(int)(0.01*currDelay);
+      currDelay-=(long)(0.025*currDelay);
       //currDelay-=microsDecremented;
     
     }
@@ -168,25 +175,22 @@ void loop() {
     delayMicroseconds(currDelay);
     digitalWrite(8, LOW);
     delayMicroseconds(currDelay);
-  }
+}
 
-  else if (currDelay>requestedDelay-50 && currDelay<requestedDelay+50){
-
-    
+ void holdSpeed(){
 
     digitalWrite(8, HIGH);
     delayMicroseconds(currDelay);
     digitalWrite(8, LOW);
     delayMicroseconds(currDelay);
-  }
-  else if (currDelay<requestedDelay){
+ }
 
-    
+ void deccelerate(){
     int currTime = millis();
 
     if (currTime-lastTime>=timeBetweenDecrements){
       lastTime=currTime;
-      currDelay+=(int)(0.01*currDelay);
+      currDelay+=(long)(0.025*currDelay);
       //currDelay+=microsIncremented;
     
     }
@@ -204,21 +208,47 @@ void loop() {
     delayMicroseconds(currDelay);
     digitalWrite(8, LOW);
     delayMicroseconds(currDelay);
+ }
+
+
+void loop() {
+  // put your main code here, to run repeatedly: 
+  // long currInput = getInput();
+
+  while (Serial.available () > 0){
+    processIncomingByte (Serial.read ());
   }
+
+  if (reqStop){
+    if (currDelay<STOP_SPEED){
+      deccelerate();
+    }
+    else{
+      onOff=false;
+      reqStop=false;
+      currDelay=STOP_SPEED;
+    }
   }
-  
+  else if (reqChangeDir){
+    if (currDelay<STOP_SPEED){
+      deccelerate();
+    }
+    else{
+      direction=reqDirection;
+      (direction) ? digitalWrite(10, HIGH) : digitalWrite(10, LOW); //high is clockwise, low is counterclockwise
+      reqChangeDir=false;
+    }
+  }
+  else if (onOff){
+    if (currDelay>requestedDelay){
+      accelerate();
+    }
 
-
-  
-
-
-  
-  
-  
-
-
-
-
-
-
+    else if (currDelay>requestedDelay-50 && currDelay<requestedDelay+50){
+      holdSpeed();
+    }
+    else if (currDelay<requestedDelay){
+      deccelerate();
+    }
+  }
 }

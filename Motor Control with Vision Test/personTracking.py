@@ -105,10 +105,12 @@ class tracker:
                         y=(boxPos[0][1].item()+boxPos[0][3].item())/2
                         self.currTarget=[x,y]
                         print(self.currTarget)
-                        return self.currTarget
+                    else:
+                        self.currTarget=[len(self.currFrame)/2, len(self.currFrame[0])/2]
 
-                        
                     self.currFrame = results[0].plot()
+                else:
+                    self.currTarget=[len(self.currFrame)/2, len(self.currFrame[0])/2]
                 
 
                     
@@ -117,8 +119,8 @@ class tracker:
                     
             else:
                 self.currTarget=[len(self.currFrame)/2, len(self.currFrame[0])/2]
-                return self.currTarget
-        
+
+            return self.currTarget  
 
     def terminateTracker(self):
         self.cap.release()

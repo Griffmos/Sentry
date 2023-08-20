@@ -84,11 +84,9 @@ class tracker:
     
 
     def startSearch(self):
-    
 
 
-            print("stuck in loop here")
-
+            
             if (self.currFrame is not None):
 
 
@@ -107,20 +105,19 @@ class tracker:
                         y=(boxPos[0][1].item()+boxPos[0][3].item())/2
                         self.currTarget=[x,y]
                         print(self.currTarget)
+                        return self.currTarget
 
                         
-
-                    
                     self.currFrame = results[0].plot()
-                else:
-                    self.currTarget=[len(self.currFrame)/2, len(self.currFrame[0])/2]
+                
 
                     
                 
                     
-            if (len(self.currTarget)>0):
+                    
+            else:
+                self.currTarget=[len(self.currFrame)/2, len(self.currFrame[0])/2]
                 return self.currTarget
-                
         
 
     def terminateTracker(self):

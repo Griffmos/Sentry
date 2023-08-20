@@ -51,7 +51,6 @@ class stepperMotor:
 
     def setSpeed(self, radiansPerSecond:float):
         speedToSet = self.toDelay(radiansPerSecond) #make this min(MAX_SPEED, toDelay(radiansPerSeond)
-
         self.setDelay(speedToSet) 
         self.currSpeed=speedToSet
         print(self.currSpeed)

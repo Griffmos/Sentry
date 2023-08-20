@@ -72,9 +72,9 @@ void processIncomingByte (const byte inByte)
   } // end of processIncomingByte  
 
 
-long MAX_SPEED=100; //found min at 75?
+long MIN_DELAY=100; //found min at 75?
 
-long MIN_SPEED=15000;
+long MAX_DELAY=15000;
 
 long STOP_SPEED=5000;
 
@@ -121,6 +121,15 @@ void process_data (const char * data)
 
       requestedDelay=abs(requestedDelay);
 
+
+      if (requestedDelay<MIN_DELAY){
+        requestedDelay=MIN_DELAY;
+      }
+      if (requestedDelay>MAX_DELAY){
+        requestedDelay=MAX_DELAY;
+        reqStop=true;
+      }
+
       
 
       onOff=true;
@@ -165,8 +174,11 @@ void accelerate(){
 
     currDelay = checkBadDelays(currDelay, false);
 
-    if (currDelay<MAX_SPEED){
-      currDelay=MAX_SPEED;
+    if (currDelay<MIN_DELAY){
+      currDelay=MIN_DELAY;
+    }
+    if (currDelay>MAX_DELAY){
+      currDelay=MAX_DELAY;
     }
 
 
@@ -190,7 +202,7 @@ void accelerate(){
 
     if (currTime-lastTime>=timeBetweenDecrements){
       lastTime=currTime;
-      currDelay+=(long)(0.025*currDelay);
+      currDelay+=(long)(0.1*currDelay);
       //currDelay+=microsIncremented;
     
     }
@@ -198,8 +210,11 @@ void accelerate(){
     currDelay = checkBadDelays(currDelay, true);
 
 
-    if (currDelay<MAX_SPEED){
-      currDelay=MAX_SPEED;
+    if (currDelay<MIN_DELAY){
+      currDelay=MIN_DELAY;
+    }
+    if (currDelay>MAX_DELAY){
+      currDelay=MAX_DELAY;
     }
 
 

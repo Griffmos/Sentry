@@ -7,7 +7,7 @@ personTracker = personTracking.tracker(True)
 
 motor = RPiMotorController.stepperMotor()
 
-maxSpeed:float=3.14
+maxSpeed:float=1.58
 
 while (True):
     currTarget = personTracker.startSearch()
@@ -19,10 +19,12 @@ while (True):
     print(distFromTarget)
 
     currSpeed:float
-    if (abs(distFromTarget)<100):
+    if (abs(distFromTarget)<50):
         currSpeed=0
     else:
         currSpeed=-1*(distFromTarget/320)*maxSpeed
+    
+    print(currSpeed)
     
 
 
@@ -31,7 +33,7 @@ while (True):
 
     motor.setSpeed(currSpeed)
 
-    sleep(0.01)
+    sleep(0.05)
 
 
     

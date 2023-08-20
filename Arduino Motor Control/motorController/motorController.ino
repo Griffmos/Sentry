@@ -72,26 +72,26 @@ void processIncomingByte (const byte inByte)
   } // end of processIncomingByte  
 
 
-
-
-int lastTime=millis();
-long currDelay=2000;
-
 long MAX_SPEED=100; //found min at 75?
 
 long MIN_SPEED=15000;
 
 long STOP_SPEED=5000;
 
+int lastTime=millis();
+long currDelay=STOP_SPEED;
+
+
+
 
 int timeBetweenDecrements=2;
 
 
-long requestedDelay=1000;
+long requestedDelay=0;
 
-bool reqStop=false; //requested to stop
+bool reqStop=true; //requested to stop
 
-bool onOff=true;
+bool onOff=false;
 
 
 bool direction=true; // true = clockwise, positive number || false = counterclockwise, negative number

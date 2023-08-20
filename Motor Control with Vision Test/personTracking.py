@@ -84,14 +84,12 @@ class tracker:
     
 
     def startSearch(self):
-        while True:
+    
 
 
-            
-
+            print("stuck in loop here")
 
             if (self.currFrame is not None):
-
 
 
                 results = self.model.track(self.currFrame, persist=True, classes=0)
@@ -108,14 +106,14 @@ class tracker:
                         x=(boxPos[0][0].item()+boxPos[0][2].item())/2
                         y=(boxPos[0][1].item()+boxPos[0][3].item())/2
                         self.currTarget=[x,y]
-                        #print(target)
+                        print(self.currTarget)
 
                         
 
                     
                     self.currFrame = results[0].plot()
                 else:
-                    self.currTarget=[]
+                    self.currTarget=[len(self.currFrame)/2, len(self.currFrame[0])/2]
 
                     
                 

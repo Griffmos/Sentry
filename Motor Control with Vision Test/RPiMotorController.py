@@ -26,18 +26,22 @@ class stepperMotor:
 
     
 
-    def __init__(self, port):
+    def __init__(self):
         self.arduino = serial.Serial('COM3', baudrate=9600, timeout=0.1) #port = '/dev/ttyACM0' for pi
 
         
 
         sleep(2)
         self.arduino.write('r'.encode())
+        self.arduino.write('\n'.encode())
 
         sleep(2)
+        self.setSpeed(0)
 
 
     def toDelay(self,radiansPerSecond):
+        if (radiansPerSecond==0):
+            return 0
         secsPerRev=(2*Pi)/radiansPerSecond
         secsPerPulse=(secsPerRev/(STEPS_PER_REV*GEAR_RATIO))
         secsPerDelaymS=(secsPerPulse*microsPerSec)*0.5

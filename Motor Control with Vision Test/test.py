@@ -19,7 +19,7 @@ while (True):
     print(distFromTarget)
 
     currSpeed:float
-    if (abs(distFromTarget)<50):
+    if (abs(distFromTarget)<25):
         currSpeed=0
     else:
         currSpeed=-1*(distFromTarget/320)*maxSpeed

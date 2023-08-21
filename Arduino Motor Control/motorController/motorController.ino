@@ -72,32 +72,53 @@ void processIncomingByte (const byte inByte)
   } // end of processIncomingByte  
 
 
-long MIN_DELAY=100; //found min at 75?
+
+//hardware constants
+int NUM_STEPS=800;
+
+//extreme constants
+long MIN_DELAY=25; 
 
 long MAX_DELAY=15000;
 
 long STOP_SPEED=5000;
 
-int lastTime=millis();
-long currDelay=STOP_SPEED;
 
-
-
+//performance constants
 
 int timeBetweenDecrements=2;
 
+float accelMultiplier=0.1;
+
+float deccelMultiplier=0.1;
+
+
+//tracking variables
+
+int lastTime=millis();
+
+long currDelay=STOP_SPEED;
+
+bool direction=true; // true = clockwise, positive number || false = counterclockwise, negative number
+
+int currPos=0;
+
+bool onOff=false;
+
+
+
+//requested/target values
 
 long requestedDelay=0;
 
 bool reqStop=true; //requested to stop
 
-bool onOff=false;
-
-
-bool direction=true; // true = clockwise, positive number || false = counterclockwise, negative number
 bool reqDirection=true;
 
 bool reqChangeDir=false;
+
+
+
 
 
 //http://www.gammon.com.au/serial
@@ -143,32 +164,27 @@ void process_data (const char * data)
 
 int checkBadDelays(long currDelay, bool accelDir){ //true = going up in delay (down in speed), false = going down in delay (up in speed)
 
-  if (currDelay>=2900 && currDelay<=3500){
-      return accelDir ? 3500 : 2900;
+  if (currDelay>=2900 && currDelay<=3400){
+      return accelDir ? 3400 : 2900;
   }
 
-  if (currDelay>=6500 && currDelay<=5900){
-      return accelDir ? 6500 : 5900;
-  }
-
-  if (currDelay>=8900 && currDelay<=9400){
-      return accelDir ? 9400 : 8900;
-  }
-
-
-
- 
   return currDelay;
 }
 
+void step(long delay){
+    currPos += (direction) ? 1 : -1;
+    digitalWrite(8, HIGH);
+    delayMicroseconds(delay);
+    digitalWrite(8, LOW);
+    delayMicroseconds(delay);
+}
 
 void accelerate(){
   int currTime = millis();
 
     if (currTime-lastTime>=timeBetweenDecrements){
       lastTime=currTime;
-      currDelay-=(long)(0.025*currDelay);
-      //currDelay-=microsDecremented;
+      currDelay-=(long)(accelMultiplier*currDelay);
     
     }
 
@@ -182,19 +198,14 @@ void accelerate(){
     }
 
 
+    step(currDelay);
   
-    digitalWrite(8, HIGH);
-    delayMicroseconds(currDelay);
-    digitalWrite(8, LOW);
-    delayMicroseconds(currDelay);
+    
 }
 
  void holdSpeed(){
 
-    digitalWrite(8, HIGH);
-    delayMicroseconds(currDelay);
-    digitalWrite(8, LOW);
-    delayMicroseconds(currDelay);
+    step(currDelay);
  }
 
  void deccelerate(){
@@ -202,7 +213,7 @@ void accelerate(){
 
     if (currTime-lastTime>=timeBetweenDecrements){
       lastTime=currTime;
-      currDelay+=(long)(0.1*currDelay);
+      currDelay+=(long)(deccelMultiplier*currDelay);
       //currDelay+=microsIncremented;
     
     }
@@ -219,16 +230,17 @@ void accelerate(){
 
 
   
-    digitalWrite(8, HIGH);
-    delayMicroseconds(currDelay);
-    digitalWrite(8, LOW);
-    delayMicroseconds(currDelay);
+    step(currDelay);
  }
 
 
 void loop() {
   // put your main code here, to run repeatedly: 
   // long currInput = getInput();
+
+  if (abs(currPos)>=NUM_STEPS){
+    reqStop=true;
+  }
 
   while (Serial.available () > 0){
     processIncomingByte (Serial.read ());

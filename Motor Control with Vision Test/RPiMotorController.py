@@ -15,7 +15,7 @@ MAX_SPEED:float=0 #TBD
 
 GEAR_RATIO:float=1/1
 
-STEPS_PER_REV=400
+STEPS_PER_REV=800
 
 
 #utilities

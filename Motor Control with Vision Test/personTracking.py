@@ -1,5 +1,6 @@
 import cv2 
 import threading
+import numpy;
 from ultralytics import YOLO
 
 MAX_AMT_POINTS=10
@@ -59,7 +60,7 @@ class tracker:
 
             if ((len(self.currTarget))>0):
                  
-                target=self.currTarget
+                target=self.currTarget[0]
         
                 for r in range(int(max(0,target[1]-5)), int(min(len(self.currFrame),target[1]+5))):
                     for c in range(int(max(0,target[0]-5)), int(min(len(self.currFrame),target[0]+5))):
@@ -103,14 +104,14 @@ class tracker:
                     if (len(boxPos)>0):
                         x=(boxPos[0][0].item()+boxPos[0][2].item())/2
                         y=(boxPos[0][1].item()+boxPos[0][3].item())/2
-                        self.currTarget=[x,y]
+                        self.currTarget=[[x,y], boxPos[0].tolist()]
                         print(self.currTarget)
                     else:
-                        self.currTarget=[len(self.currFrame)/2, len(self.currFrame[0])/2]
+                        self.currTarget=[[len(self.currFrame)/2, len(self.currFrame[0])/2],[0,0,0,0]]
 
                     self.currFrame = results[0].plot()
                 else:
-                    self.currTarget=[len(self.currFrame)/2, len(self.currFrame[0])/2]
+                    self.currTarget=[[len(self.currFrame)/2, len(self.currFrame[0])/2],[0,0,0,0]]
                 
 
                     
@@ -118,7 +119,7 @@ class tracker:
                     
                     
             else:
-                self.currTarget=[len(self.currFrame)/2, len(self.currFrame[0])/2]
+                self.currTarget=[[len(self.currFrame)/2, len(self.currFrame[0])/2], [0,0,0,0]]
 
             return self.currTarget  
 

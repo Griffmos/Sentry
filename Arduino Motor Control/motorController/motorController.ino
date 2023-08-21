@@ -162,13 +162,13 @@ void process_data (const char * data)
 
 
 
-int checkBadDelays(long currDelay, bool accelDir){ //true = going up in delay (down in speed), false = going down in delay (up in speed)
+int checkBadDelays(long delay, bool accelDir){ //true = going up in delay (down in speed), false = going down in delay (up in speed)
 
-  if (currDelay>=2900 && currDelay<=3400){
-      return accelDir ? 3400 : 2900;
+  if (delay>=2900 && delay<=3500){
+      return accelDir ? 3500 : 2900;
   }
 
-  return currDelay;
+  return delay;
 }
 
 void step(long delay){
@@ -205,6 +205,8 @@ void accelerate(){
 
  void holdSpeed(){
 
+    currDelay = checkBadDelays(currDelay, false);
+
     step(currDelay);
  }
 
@@ -214,7 +216,6 @@ void accelerate(){
     if (currTime-lastTime>=timeBetweenDecrements){
       lastTime=currTime;
       currDelay+=(long)(deccelMultiplier*currDelay);
-      //currDelay+=microsIncremented;
     
     }
 

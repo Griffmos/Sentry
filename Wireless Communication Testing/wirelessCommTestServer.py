@@ -6,14 +6,15 @@
 import socket
 import time
 from threading import Timer
-
+import pickle
 
 
 #server
 
+
 s=socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-s.bind(('',5000))
-s.listen(5)
+s.bind(('',5233))
+s.listen(1)
 print("server runnig")
 print(s.getsockname())
 
@@ -26,19 +27,24 @@ print(s.getsockname())
 connection,address = s.accept()
 print(f"Connection from {address} worked!")
 
+count =0
 while True:
-    # print("in loop")
-    # message = 'Hello client'
-    # print(message)
-    # clientsocket.send(bytes(message, "utf-8"))
 
     data = connection.recv(4096)
 
-    print(data)
+    # print(pickle.loads(data))
+
+    dataString = data.decode("utf-8")
+
+    print(dataString)
+
+    count+=1
+    print(count)
+
+
+    connection.send(data)
 
     if not data: break
-    connection.send(data)
-connection.close()
 
     #background_controller()
 

@@ -1,7 +1,7 @@
 import socket
 import numpy
 
-def recvIntArr(s:socket.socket,maxSize:int=6,maxDimensions=3):
+def recvIntArr(s:socket.socket,maxByteSize:int=4,maxDimensions=3):
     data:bytes=None
     amtBytes:int=-1
     arrDimensions=[]
@@ -23,27 +23,27 @@ def recvIntArr(s:socket.socket,maxSize:int=6,maxDimensions=3):
 
         #maxSize bytes for amtBytes + 1 byte for bytesPerInt + 1 byte for dimensions + maxDimesions*2 bytes for a 16 bit max size in each direction 
         infoBytesParsed:int=0
-        if (len(data)>=(maxSize-1)+1+1+maxDimensions*2):
-            amtBytes=int.from_bytes(data[0:maxSize], "big")
+        if (len(data)>=(maxByteSize-1)+1+1+maxDimensions*2):
+            amtBytes=int.from_bytes(data[0:maxByteSize], "big")
             print(f'amtBytes: {amtBytes}')
-            infoBytesParsed+=maxSize
+            infoBytesParsed+=maxByteSize
 
-            bytesPerInt=int.from_bytes(data[maxSize], "big")
+            bytesPerInt=data[maxByteSize]
             print(f'bytesPerInt: {bytesPerInt}')
             infoBytesParsed+=1
 
-            numDimensions=int(data[maxSize+1])
+            numDimensions=int(data[maxByteSize+1])
             print(f'numDimensions: {numDimensions}')
             infoBytesParsed+=1
 
-            for i in range(0, numDimensions, 2):
+            for i in range(0,numDimensions*2, 2):
                 #maxSize+2 to account for the data parsing above, i+2 to accound for each appenened int is a 2 byte int
-                arrDimensions.append(int.from_bytes(data[maxSize+2+i:maxSize+2+i+2],"big"))
+                arrDimensions.append(int.from_bytes(data[maxByteSize+2+i:maxByteSize+2+i+2],"big"))
                 infoBytesParsed+=1
 
             print(f'arrDimensions: {arrDimensions}')
 
-            data=data[infoBytesParsed:len(data)]
+            data=data[infoBytesParsed+numDimensions:len(data)]
             
     bP:int=0 #bytesParsed
 
@@ -55,10 +55,12 @@ def recvIntArr(s:socket.socket,maxSize:int=6,maxDimensions=3):
 
     while bP<amtBytes:
         data+=s.recv(4096)
+        print(data)
 
         #parsing each data
         
-        while(bP<bP+len(data)):
+        while(bP<len(data)):
+
 
             bPBefore=bP
 
@@ -67,9 +69,11 @@ def recvIntArr(s:socket.socket,maxSize:int=6,maxDimensions=3):
             byte=None
 
             if (bytesPerInt==1):
-                byte=int.from_bytes([bP],"big")
+                byte=data[bP]
             else:
                 byte=int.from_bytes(data[bP:bP+2],"big")
+
+            print(byte)
             
             #getting to the right dimension
             if len(arrDimensions)==1:
@@ -87,6 +91,7 @@ def recvIntArr(s:socket.socket,maxSize:int=6,maxDimensions=3):
 
             for i in range(len(incrementors)):
                 #if the incrementor is = the dimension, it goes to zero and the next most significant increases
+                
                 if (incrementors[len(incrementors)-1-i]==arrDimensions[len(incrementors)-1-i]):
                     incrementors[len(incrementors)-1-i]=0
                     incrementors[len(incrementors)-1-i-1]+=1 #this MIGHT error out if this byte is the last possible value and it tries to increment the next most significant incrementor which doesn't exists
@@ -120,10 +125,9 @@ def main():
     conn,address = s.accept()
     print(f"Connection from {address} worked!")
 
-    data=conn.recv(4096)
+    arr=recvIntArr(conn)
 
-    print(data)
-    print(len(data))
 
+    print(arr)
 
 main()

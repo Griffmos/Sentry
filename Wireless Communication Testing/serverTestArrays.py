@@ -40,11 +40,12 @@ def recvIntArr(s:socket.socket,maxByteSize:int=4,maxDimensions=3):
             for i in range(0,numDimensions*2, 2):
                 #maxSize+2 to account for the data parsing above, i+2 to accound for each appenened int is a 2 byte int
                 arrDimensions.append(int.from_bytes(data[maxByteSize+2+i:maxByteSize+2+i+2],"big"))
-                infoBytesParsed+=1
+                infoBytesParsed+=2
 
             print(f'arrDimensions: {arrDimensions}')
 
-            data=data[infoBytesParsed+numDimensions:len(data)]
+            data=data[infoBytesParsed:len(data)]
+        print(infoBytesParsed)
             
     bP:int=0 #bytesParsed
 
@@ -55,14 +56,16 @@ def recvIntArr(s:socket.socket,maxByteSize:int=4,maxDimensions=3):
     arr=numpy.empty(shape=arrDimensions,dtype=(numpy.uint8 if (bytesPerInt==1) else numpy.uint16))
 
     while bP<amtBytes:
-        data+=s.recv(amtBytes-bP)
-        #print(data)
+        data+=s.recv(amtBytes-bP+1)
+        print(len(data))
 
         #parsing each data
 
         thisRecvBP=0
+
+        #print(data)
         
-        while(thisRecvBP<len(data) and thisRecvBP+bP<amtBytes):
+        while(thisRecvBP<len(data)):
 
 
             bPBefore=thisRecvBP
@@ -85,17 +88,18 @@ def recvIntArr(s:socket.socket,maxByteSize:int=4,maxDimensions=3):
                 arr[incrementors[0]][incrementors[1]]=byte
             elif len(arrDimensions)==3:     
                 arr[incrementors[0]][incrementors[1]][incrementors[2]]=byte
-                
+            
             
             thisRecvBP+=bytesPerInt
 
             #incrementing whatever the least significant incrementer is
             incrementors[len(incrementors)-1]+=1
 
+
             for i in range(len(incrementors)):
                 #if the incrementor is = the dimension, it goes to zero and the next most significant increases
                 
-                if (incrementors[len(incrementors)-1-i]==arrDimensions[len(incrementors)-1-i]-1):
+                if (incrementors[len(incrementors)-1-i]==arrDimensions[len(incrementors)-1-i]):
                     incrementors[len(incrementors)-1-i]=0
                     incrementors[len(incrementors)-1-i-1]+=1 #this MIGHT error out if this byte is the last possible value and it tries to increment the next most significant incrementor which doesn't exists
                 else: #if this one didn't increment, then next one def won't
@@ -135,12 +139,11 @@ def main():
     
     count=0
 
-    print(recvIntArr(conn))
-    while True:
-        arr=recvIntArr(conn)
-        print(arr)
-        cv2.imwrite(f'recievedFrame{count}.jpg',arr)
-        count+=1
+    #while True:
+    arr=recvIntArr(conn)
+    print(arr)
+    cv2.imwrite(f'recievedFrame{count}.jpg',arr)
+    count+=1
 
 
 

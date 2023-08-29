@@ -16,6 +16,9 @@ def findNumDimensions(arr, dimensions:int=0):
 #bytesPerInt is either 1 or 2
 def sendIntArr(arr:numpy.ndarray, s:socket.socket, bytesPerInt, maxByteSize=4):
 
+    if (type(arr) is list):
+        arr = numpy.array(arr)
+
     dimensions=findNumDimensions(arr)
     dimensionsBytes=struct.pack('>B',dimensions)
     print(dimensionsBytes)
@@ -83,6 +86,7 @@ def sendIntArr(arr:numpy.ndarray, s:socket.socket, bytesPerInt, maxByteSize=4):
 
     print("sending")
     print(len(sendData))
+    #print(byteArr)
 
     s.send(sendData)
 
@@ -100,7 +104,7 @@ def main():
 
 
     cap = cv2.VideoCapture(0,cv2.CAP_DSHOW)
-    #arr=[1,2,3,1000]
+    #arr=numpy.array([1,2,3,1000])
     #arr=[[1,2],[2,3],[3,4],[999,1000]]
     #arr=[[[1,2,3],[4,5,6],[7,8,9]],[[1000,2000,3000],[4000,5000,6000],[7000,8000,9000]]]
 
@@ -113,13 +117,15 @@ def main():
     s.connect(('10.0.0.216',8888))
     print("connected")
 
-    while True:
+    #sendIntArr(arr,s,2)
 
-        ret, frame =cap.read()
 
-        sendIntArr(frame,s,1)
+    ret, frame =cap.read()
 
-        sleep(20)
+    print(frame)
+    sendIntArr(frame,s,1)
+
+    sleep(20)
 
 
 

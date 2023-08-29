@@ -1,6 +1,8 @@
 import socket
-import struct                         
-
+import struct         
+import cv2                
+from time import sleep
+import numpy
 
 
 #while amtBytes<maxSize append null/blank bits
@@ -23,31 +25,47 @@ def sendIntArr(arr:list, s:socket.socket, bytesPerInt, maxByteSize=4):
 
     
     byteArr=None
-    dataFormat = ('>B' if bytesPerInt==1 else '>H')
-    for x in arr:
+    if (bytesPerInt==1):
         if (dimensions>1):
-            for y in x:
+            for y in arr:
                 if(dimensions>2):
                     for z in y:
-                        currByte=struct.pack(dataFormat, z)
+                        if byteArr is None:
+                            byteArr=bytearray(z)
+                        else:
+                            byteArr+=bytearray(z)
+                else:
+                    if byteArr is None:
+                        byteArr=bytearray(y)
+                    else:
+                        byteArr+=bytearray(y)
+        else:    
+            byteArr=bytearray(arr)
+    else:
+        for x in arr:
+            if (dimensions>1):
+                for y in x:
+                    if(dimensions>2):
+                        for z in y:
+                            currByte=struct.pack('>H', z)
+                            if byteArr is None:
+                                byteArr=currByte
+                            else:
+                                byteArr+=currByte
+                    else:
+                        currByte=struct.pack('>H', y)
                         if byteArr is None:
                             byteArr=currByte
                         else:
                             byteArr+=currByte
-                else:
-                    currByte=struct.pack(dataFormat, y)
-                    if byteArr is None:
-                        byteArr=currByte
-                    else:
-                        byteArr+=currByte
-        else:
-            currByte=struct.pack(dataFormat, x)
-            if byteArr is None:
-                byteArr=currByte
             else:
-                byteArr+=currByte
+                currByte=struct.pack('>H', x)
+                if byteArr is None:
+                    byteArr=currByte
+                else:
+                    byteArr+=currByte
 
-    print(byteArr)
+    #print(byteArr)
 
 
     amtBytes=struct.pack('>I',len(byteArr))
@@ -75,9 +93,12 @@ def sendIntArr(arr:list, s:socket.socket, bytesPerInt, maxByteSize=4):
 
     sendData=infoBytes+byteArr
 
-    print(sendData)
+    #print(sendData)
+
+    print("sending")
 
     s.send(sendData)
+
 
 
 
@@ -90,17 +111,28 @@ def sendIntArr(arr:list, s:socket.socket, bytesPerInt, maxByteSize=4):
 
 def main():
 
+
+    cap = cv2.VideoCapture(0)
     #arr=[1,2,3,1000]
     #arr=[[1,2],[2,3],[3,4],[999,1000]]
-    arr=[[[1,2,3],[4,5,6],[7,8,9]],[[1000,2000,3000],[4000,5000,6000],[7000,8000,9000]]]
+    #arr=[[[1,2,3],[4,5,6],[7,8,9]],[[1000,2000,3000],[4000,5000,6000],[7000,8000,9000]]]
+
+
 
 
     s=socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
 
     s.connect(('10.0.0.216',8888))
+    print("connected")
 
-    sendIntArr(arr,s,2)
+    while True:
+
+        ret, frame =cap.read()
+
+        sendIntArr(frame.tolist(),s,1)
+
+        sleep(100)
 
 
 

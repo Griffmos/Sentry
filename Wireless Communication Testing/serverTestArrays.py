@@ -1,5 +1,6 @@
 import socket
 import numpy
+import cv2
 
 def recvIntArr(s:socket.socket,maxByteSize:int=4,maxDimensions=3):
     data:bytes=None
@@ -51,29 +52,31 @@ def recvIntArr(s:socket.socket,maxByteSize:int=4,maxDimensions=3):
 
 
     #limited to hold either 8 bit or 16 bit ints, and 3d array
-    arr=numpy.empty(shape=arrDimensions,dtype=(numpy.int8 if (bytesPerInt==1) else numpy.int16))
+    arr=numpy.empty(shape=arrDimensions,dtype=(numpy.uint8 if (bytesPerInt==1) else numpy.uint16))
 
     while bP<amtBytes:
-        data+=s.recv(4096)
-        print(data)
+        data+=s.recv(amtBytes-bP)
+        #print(data)
 
         #parsing each data
+
+        thisRecvBP=0
         
-        while(bP<len(data)):
+        while(thisRecvBP<len(data) and thisRecvBP+bP<amtBytes):
 
 
-            bPBefore=bP
+            bPBefore=thisRecvBP
 
             #getting byte to write
 
             byte=None
 
             if (bytesPerInt==1):
-                byte=data[bP]
+                byte=data[thisRecvBP]
             else:
-                byte=int.from_bytes(data[bP:bP+2],"big")
+                byte=int.from_bytes(data[thisRecvBP:thisRecvBP+2],"big")
 
-            print(byte)
+            #print(byte)
             
             #getting to the right dimension
             if len(arrDimensions)==1:
@@ -84,7 +87,7 @@ def recvIntArr(s:socket.socket,maxByteSize:int=4,maxDimensions=3):
                 arr[incrementors[0]][incrementors[1]][incrementors[2]]=byte
                 
             
-            bP+=bytesPerInt
+            thisRecvBP+=bytesPerInt
 
             #incrementing whatever the least significant incrementer is
             incrementors[len(incrementors)-1]+=1
@@ -92,7 +95,7 @@ def recvIntArr(s:socket.socket,maxByteSize:int=4,maxDimensions=3):
             for i in range(len(incrementors)):
                 #if the incrementor is = the dimension, it goes to zero and the next most significant increases
                 
-                if (incrementors[len(incrementors)-1-i]==arrDimensions[len(incrementors)-1-i]):
+                if (incrementors[len(incrementors)-1-i]==arrDimensions[len(incrementors)-1-i]-1):
                     incrementors[len(incrementors)-1-i]=0
                     incrementors[len(incrementors)-1-i-1]+=1 #this MIGHT error out if this byte is the last possible value and it tries to increment the next most significant incrementor which doesn't exists
                 else: #if this one didn't increment, then next one def won't
@@ -100,10 +103,14 @@ def recvIntArr(s:socket.socket,maxByteSize:int=4,maxDimensions=3):
 
 
             #indicates couldn't parse anything since there is a hanging byte for the next data recieve
-            if (bPBefore==bP):
-                data=data[bP:amtBytes] #should leave remainder
+            if (bPBefore==thisRecvBP):
+                data=data[thisRecvBP:amtBytes] #should leave remainder
                 break
+                
+        print(thisRecvBP)
+        bP+=thisRecvBP
 
+    print(bP)
 
 
     return arr
@@ -125,9 +132,16 @@ def main():
     conn,address = s.accept()
     print(f"Connection from {address} worked!")
 
-    arr=recvIntArr(conn)
+    
+    count=0
+
+    print(recvIntArr(conn))
+    while True:
+        arr=recvIntArr(conn)
+        print(arr)
+        cv2.imwrite(f'recievedFrame{count}.jpg',arr)
+        count+=1
 
 
-    print(arr)
 
 main()

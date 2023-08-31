@@ -11,6 +11,9 @@ maxArea:float = 307200 #camera frame size
 
 def calcSpeed(currTarget:list):
 
+    if (currTarget is None):
+        return 0
+
     target:list=currTarget[0]
 
     distFromTarget = 320-target[0]

@@ -146,8 +146,13 @@ def main():
 
     while True:
         arr=recvIntArr(conn)
-        cv2.imshow('frame',arr)
+        print(arr.shape)
+        #cv2.imwrite(f'frame{count}.jpg',arr)
+        cv2.imshow(winname='frame',mat=arr)
         count+=1
+
+        if cv2.waitKey(1) & 0xFF == ord('q'):
+            break
 
 
 

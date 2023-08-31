@@ -3,6 +3,7 @@ import threading
 import numpy;
 from ultralytics import YOLO
 import socket
+from time import sleep
 
 MAX_AMT_POINTS=10
 maxPointLoops=30
@@ -108,7 +109,7 @@ class tracker:
         isNone:bool=True
 
         for byte in bytes_in:
-            if (numpy.int8(byte)!=-1):
+            if (numpy.int8(byte)!=0):
                 isNone=False
                 break
         
@@ -130,6 +131,9 @@ class tracker:
             self.sendFrame()
 
             self.recieveTarget()
+            return True
+        else:
+            return False
 
 
     def terminateTracker(self):

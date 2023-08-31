@@ -38,7 +38,7 @@ def calcSpeed(currTarget:list):
     areaCoeff= Karea*((maxArea-area)/maxArea)
 
 
-    multiplier = distCoeff+areaCoeff
+    multiplier = distCoeff*areaCoeff
 
     multiplier = min(multiplier, 1)
 

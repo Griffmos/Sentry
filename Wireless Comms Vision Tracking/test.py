@@ -1,5 +1,6 @@
 import clientPersonTracking
 from time import sleep
+import time
 
 
 def main():
@@ -8,9 +9,11 @@ def main():
 
 
     while True:
+        startTime=time.perf_counter()
         success=tracker.findTarget()
         
         print(tracker.currTarget)
+        print(f"total time: {time.perf_counter()-startTime}")
 
 
 

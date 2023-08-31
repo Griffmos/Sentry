@@ -5,7 +5,9 @@ import time
 
 maxSpeed:float=1.58
 
-Ka:float
+Karea:float=0.5
+
+Kdist:float=0.8
 
 maxArea:float = 307200 #camera frame size
 
@@ -24,20 +26,23 @@ def calcSpeed(currTarget:list):
         return 0
     
 
-    distCoeff=-1*(distFromTarget/320)
+    distCoeff=Kdist*-1*(distFromTarget/320)
 
-
+    
     
 
     box:list = currTarget[1]
 
     area:float=(box[2]-box[0])*(box[3]-box[1])
 
-    areaCoeff= (maxArea-area)/maxArea
+    areaCoeff= Karea*((maxArea-area)/maxArea)
 
 
+    multiplier = distCoeff+areaCoeff
 
-    return maxSpeed*distCoeff*areaCoeff
+    multiplier = min(multiplier, 1)
+
+    return maxSpeed*multiplier
 
     #print(distFromTarget)
 

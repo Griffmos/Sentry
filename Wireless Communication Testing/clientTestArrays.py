@@ -1,6 +1,6 @@
 import socket
 import struct         
-import cv2                
+#import cv2                
 from time import sleep
 import numpy
 
@@ -103,10 +103,10 @@ def sendIntArr(arr:numpy.ndarray, s:socket.socket, bytesPerInt, maxByteSize=4):
 def main():
 
 
-    cap = cv2.VideoCapture(0,cv2.CAP_DSHOW)
+    #cap = cv2.VideoCapture(0,cv2.CAP_DSHOW)
     #arr=numpy.array([1,2,3,1000])
     #arr=[[1,2],[2,3],[3,4],[999,1000]]
-    #arr=[[[1,2,3],[4,5,6],[7,8,9]],[[1000,2000,3000],[4000,5000,6000],[7000,8000,9000]]]
+    arr=[[[1,2,3],[4,5,6],[7,8,9]],[[1000,2000,3000],[4000,5000,6000],[7000,8000,9000]]]
 
 
 
@@ -114,18 +114,18 @@ def main():
     s=socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
 
-    s.connect(('10.0.0.216',8888))
+    s.connect(('192.168.1.96',8888))
     print("connected")
 
-    #sendIntArr(arr,s,2)
+    sendIntArr(arr,s,2)
 
 
-    ret, frame =cap.read()
+    #ret, frame =cap.read()
 
-    print(frame)
-    sendIntArr(frame,s,1)
+    #print(frame)
+    #sendIntArr(frame,s,1)
 
-    sleep(20)
+    #sleep(20)
 
 
 

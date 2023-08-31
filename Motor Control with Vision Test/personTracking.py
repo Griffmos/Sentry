@@ -14,7 +14,7 @@ class tracker:
     def __init__(self, showFeed:bool):
         print("inited")
         self.model = YOLO('yolov8n.pt')
-        self.cap = cv2.VideoCapture(0)
+        self.cap = cv2.VideoCapture(0,cv2.CAP_DSHOW)
         self.currFrame=None
         self.showFeed=showFeed
 

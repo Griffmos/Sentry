@@ -88,7 +88,7 @@ def sendIntArr(arr:numpy.ndarray, s:socket.socket, bytesPerInt, maxByteSize=4):
     print(len(sendData))
     #print(byteArr)
 
-    s.send(sendData)
+    s.sendall(sendData)
 
 
 
@@ -114,7 +114,7 @@ def main():
     s=socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
 
-    s.connect(('10.0.0.216',8888))
+    s.connect(('192.168.1.49',8888))
     print("connected")
 
     #sendIntArr(arr,s,2)

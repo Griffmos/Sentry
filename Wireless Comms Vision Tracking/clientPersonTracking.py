@@ -14,7 +14,7 @@ class tracker:
 
     def __init__(self, showFeed:bool, IP, PORT):
         print("inited")
-        self.cap = cv2.VideoCapture(0,cv2.CAP_DSHOW)
+        self.cap = cv2.VideoCapture(0)
         self.currFrame=None
         self.showFeed=showFeed
 

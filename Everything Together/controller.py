@@ -9,6 +9,8 @@ Ka:float
 
 maxArea:float = 307200 #camera frame size
 
+TIMES_TARGET_NONE_TO_STOP=2
+
 def calcSpeed(currTarget:list):
 
     if (currTarget is None):
@@ -46,6 +48,8 @@ def main():
     tracker = clientPersonTracking.tracker(True, '192.168.1.43', 8888)
     motor = RPiMotorController.stepperMotor()
 
+    noneCounter = 0
+    lastSpeed = 100000
 
     while True:
         startTime=time.perf_counter()
@@ -54,9 +58,23 @@ def main():
         print(tracker.currTarget)
         print(f"total time: {time.perf_counter()-startTime}")
 
-        currSpeed:float = calcSpeed(tracker.currTarget)
+        currTarget = tracker.currTarget
+        if (currTarget is None):
+            if (noneCounter<TIMES_TARGET_NONE_TO_STOP):
+                noneCounter+=1
+                motor.setSpeed(lastSpeed)
+            else:
+                motor.setSpeed(0)
+        else:
+            noneCounter = 0
 
-        motor.setSpeed(currSpeed)
+            currSpeed:float = calcSpeed(tracker.currTarget)
+
+
+
+            motor.setSpeed(currSpeed)
+
+            lastSpeed=currSpeed
 
 
 main()    

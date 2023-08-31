@@ -69,7 +69,7 @@ class tracker:
                     else:
                         self.points.pop(i)
 
-            if ((len(self.currTarget))>0):
+            if (self.currTarget is not None and (len(self.currTarget))>0):
                  
                 targetPoint=self.currTarget[0]
         

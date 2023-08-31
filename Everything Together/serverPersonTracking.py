@@ -66,7 +66,7 @@ def runServer():
             return -1
         recvTime=time.perf_counter()
         
-        results = MODEL.track(frame, persist=True, classes=0)
+        results = MODEL.track(frame, persist=True, classes=0, conf=0.70)
 
         target=-1
         if (len(results)>0):

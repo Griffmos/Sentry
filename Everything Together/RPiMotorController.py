@@ -21,6 +21,27 @@ STEPS_PER_REV=1600
 #utilities
 
 
+def toDelay(self,radiansPerSecond):
+        if (radiansPerSecond==0):
+            return 0
+        secsPerRev=(2*Pi)/radiansPerSecond
+        secsPerPulse=(secsPerRev/(STEPS_PER_REV*GEAR_RATIO))
+        secsPerDelaymS=(secsPerPulse*microsPerSec)*0.5
+        
+        return int(secsPerDelaymS)
+    
+def toRadiansPerSecond(self, delay):
+    if (delay==0):
+        return 0
+        
+    secsPerStep = delay/(0.5*microsPerSec)
+
+    secsPerRev = secsPerStep*(STEPS_PER_REV*GEAR_RATIO)
+
+    radsPerSec = 1/(secsPerRev/(2*Pi))
+
+    return radsPerSec
+
 
 class stepperMotor:
 
@@ -39,18 +60,11 @@ class stepperMotor:
         self.setSpeed(0)
 
 
-    def toDelay(self,radiansPerSecond):
-        if (radiansPerSecond==0):
-            return 0
-        secsPerRev=(2*Pi)/radiansPerSecond
-        secsPerPulse=(secsPerRev/(STEPS_PER_REV*GEAR_RATIO))
-        secsPerDelaymS=(secsPerPulse*microsPerSec)*0.5
-        
-        return int(secsPerDelaymS)
+    
 
 
     def setSpeed(self, radiansPerSecond:float):
-        speedToSet = self.toDelay(radiansPerSecond) #make this min(MAX_SPEED, toDelay(radiansPerSeond)
+        speedToSet = toDelay(radiansPerSecond) #make this min(MAX_SPEED, toDelay(radiansPerSeond)
         self.setDelay(speedToSet) 
         self.currSpeed=speedToSet
         print(self.currSpeed)
@@ -108,6 +122,8 @@ class stepperMotor:
 s = stepperMotor()
 
 print(s.toDelay(0.285))
+
+print (s.toRadiansPerSecond(s.toDelay(0.285)))
     
 
     

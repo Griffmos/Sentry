@@ -6,7 +6,7 @@ import time
 from threading import Thread
 
 maxSpeed:float=1.58
-minSpeed:float = 0.285 #approx 14000 delay, the max delay
+minSpeed:float = RPiMotorController.toRadiansPerSecond(14000)
 
 Karea:float=0.5
 

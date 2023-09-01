@@ -77,9 +77,9 @@ void processIncomingByte (const byte inByte)
 int NUM_STEPS=1600;
 
 //extreme constants
-long MIN_DELAY=25; 
+long MIN_DELAY=50; 
 
-long MAX_DELAY=14000;
+long MAX_DELAY=15000;
 
 long STOP_SPEED=5000;
 
@@ -91,6 +91,8 @@ int timeBetweenDecrements=2;
 float accelMultiplier=0.1;
 
 float deccelMultiplier=0.1;
+
+float errorPercent=0.05;
 
 
 //tracking variables
@@ -162,19 +164,20 @@ void process_data (const char * data)
     }
 
     
-    //Serial.println(requestedDelay);
+    Serial.println(requestedDelay);
+    Serial.println(currDelay);
   }  // end of process_data
 
 
 
-int checkBadDelays(long delay, bool accelDir){ //true = going up in delay (down in speed), false = going down in delay (up in speed)
+// int checkBadDelays(long delay, bool accelDir){ //true = going up in delay (down in speed), false = going down in delay (up in speed)
 
-  if (delay>=2900 && delay<=3500){
-      return accelDir ? 3500 : 2900;
-  }
+//   // if (delay>=2900 && delay<=3500){
+//   //     return accelDir ? 3500 : 2900;
+//   // }
 
-  return delay;
-}
+//   return delay;
+// }
 
 void step(long delay){
     currPos += (direction) ? 1 : -1;
@@ -193,7 +196,7 @@ void accelerate(){
     
     }
 
-    currDelay = checkBadDelays(currDelay, false);
+    //currDelay = checkBadDelays(currDelay, false);
 
     if (currDelay<MIN_DELAY){
       currDelay=MIN_DELAY;
@@ -210,7 +213,7 @@ void accelerate(){
 
  void holdSpeed(){
 
-    currDelay = checkBadDelays(currDelay, false);
+    //currDelay = checkBadDelays(currDelay, false);
 
     step(currDelay);
  }
@@ -224,7 +227,7 @@ void accelerate(){
     
     }
 
-    currDelay = checkBadDelays(currDelay, true);
+    //currDelay = checkBadDelays(currDelay, true);
 
 
     if (currDelay<MIN_DELAY){
@@ -277,7 +280,7 @@ void loop() {
       accelerate();
     }
 
-    else if (currDelay>requestedDelay-50 && currDelay<requestedDelay+50){
+    else if (currDelay>requestedDelay-(requestedDelay*errorPercent) && currDelay<requestedDelay+(requestedDelay*errorPercent)){
       holdSpeed();
     }
     else if (currDelay<requestedDelay){

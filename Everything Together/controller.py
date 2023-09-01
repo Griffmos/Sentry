@@ -42,11 +42,11 @@ def calcSpeed(currTarget:list):
     
     distFromTarget = abs(distFromTarget)
 
-    if (abs(distFromTarget)<25):
+    if (distFromTarget<25):
         return 0
     
 
-    distCoeff=Kdist*-1*(distFromTarget/320)
+    distCoeff=Kdist*(distFromTarget/320)
 
     
     
@@ -60,10 +60,10 @@ def calcSpeed(currTarget:list):
     
     
     #error term
-    errorCoeff = Kerror * (abs(distFromTarget)/(abs(calcSpeed.lastError) if calcSpeed.lastError !=0 else abs(distFromTarget)))
+    errorCoeff = Kerror * (distFromTarget)/((calcSpeed.lastError) if calcSpeed.lastError !=0 else distFromTarget)
 
 
-
+    print(f"last error: {calcSpeed.lastError}")
 
 
 
@@ -88,7 +88,7 @@ def calcSpeed(currTarget:list):
     
 
     calcSpeed.lastError = distFromTarget
-    return max(speed,minSpeed) if speed>0 else min(speed,-minSpeed)
+    return direction*max(speed,minSpeed)
 
     #print(distFromTarget)
 

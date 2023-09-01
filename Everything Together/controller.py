@@ -7,23 +7,33 @@ from threading import Thread
 
 maxSpeed:float=3.14
 minSpeed:float = RPiMotorController.toRadiansPerSecond(14000)
-
-Karea:float=0.8
-
-Kdist:float=0.5
-
- # ~ Kdamp:float=0.3
-
 maxArea:float = 307200 #camera frame size
 
-TIMES_TARGET_NONE_TO_STOP=2
+
+Karea:float=1
+
+Kdist:float=1
+
+Kerror:float=1
+
+noneSpeedDivisor = 2
+TIMES_TARGET_NONE_TO_STOP = 2 
+
+# ~ Kdamp:float=0.3
 
 
-def calcSpeed(currTarget:list, lastSpeed:float):
+
+
+
+
+lastError:int = 0 
+def calcSpeed(currTarget:list):
 
     if (currTarget is None):
         return 0
 
+
+    #distance term
     target:list=currTarget[0]
 
     distFromTarget = 320-target[0]
@@ -36,7 +46,7 @@ def calcSpeed(currTarget:list, lastSpeed:float):
 
     
     
-
+    #area term
     box:list = currTarget[1]
 
     area:float=(box[2]-box[0])*(box[3]-box[1])
@@ -45,15 +55,21 @@ def calcSpeed(currTarget:list, lastSpeed:float):
     
     
     
+    #error term
+    errorCoeff = Kerror * (abs(distFromTarget)/abs(lastError))
 
 
-    multiplier = distCoeff*areaCoeff
+
+
+
+
+
+    multiplier = (distCoeff*errorCoeff)+areaCoeff
 
     multiplier = min(multiplier, 1)
 
-    speed = maxSpeed*multiplier
     
-    
+    #dampening term (not using)
     # ~ speedDiff=abs(lastSpeed-speed)
     
     # ~ dampeningCoeff = Kdamp/(Kdamp if speedDiff==0 else speedDiff)
@@ -63,8 +79,11 @@ def calcSpeed(currTarget:list, lastSpeed:float):
     # ~ print(f"dampeningCoeff: {dampeningCoeff}")
     
     # ~ speed = speed * (1 if dampeningCoeff>1 else dampeningCoeff)
+
+    speed = maxSpeed*multiplier
     
 
+    lastError = distFromTarget
     return max(speed,minSpeed) if speed>0 else min(speed,-minSpeed)
 
     #print(distFromTarget)
@@ -92,13 +111,13 @@ def main():
         if (currTarget is None):
             if (noneCounter<TIMES_TARGET_NONE_TO_STOP):
                 noneCounter+=1
-                motor.setSpeed(lastSpeed)
+                motor.setSpeed(lastSpeed/noneSpeedDivisor)
             else:
                 motor.setSpeed(0)
         else:
             noneCounter = 0
 
-            currSpeed:float = calcSpeed(tracker.currTarget, lastSpeed)
+            currSpeed:float = calcSpeed(tracker.currTarget)
 
 
 

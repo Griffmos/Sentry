@@ -64,9 +64,9 @@ def main():
 
     while True:
         startTime=time.perf_counter()
-        newTracker = Thread(target=tracker.findTarget())
+        success=tracker.findTarget()
 
-        newTracker.start()
+    
         
         print(tracker.currTarget)
         print(f"total time: {time.perf_counter()-startTime}")

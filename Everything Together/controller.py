@@ -3,6 +3,8 @@ import RPiMotorController
 from time import sleep
 import time
 
+from threading import Thread
+
 maxSpeed:float=1.58
 minSpeed:float = 0.285 #approx 14000 delay, the max delay
 
@@ -13,6 +15,7 @@ Kdist:float=0.8
 maxArea:float = 307200 #camera frame size
 
 TIMES_TARGET_NONE_TO_STOP=2
+
 
 def calcSpeed(currTarget:list):
 
@@ -61,7 +64,9 @@ def main():
 
     while True:
         startTime=time.perf_counter()
-        success=tracker.findTarget()
+        newTracker = Thread(target=tracker.findTarget())
+
+        newTracker.start()
         
         print(tracker.currTarget)
         print(f"total time: {time.perf_counter()-startTime}")
@@ -83,6 +88,8 @@ def main():
             motor.setSpeed(currSpeed)
 
             lastSpeed=currSpeed
+        
+        sleep(0.1)
 
 
 main()    

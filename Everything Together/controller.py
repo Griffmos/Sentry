@@ -26,7 +26,6 @@ TIMES_TARGET_NONE_TO_STOP = 2
 
 
 
-lastError:int = 0 
 def calcSpeed(currTarget:list):
 
     if (currTarget is None):
@@ -35,8 +34,13 @@ def calcSpeed(currTarget:list):
 
     #distance term
     target:list=currTarget[0]
+    
 
     distFromTarget = 320-target[0]
+    
+    direction = 1 if distFromTarget<1 else -1
+    
+    distFromTarget = abs(distFromTarget)
 
     if (abs(distFromTarget)<25):
         return 0
@@ -56,7 +60,7 @@ def calcSpeed(currTarget:list):
     
     
     #error term
-    errorCoeff = Kerror * (abs(distFromTarget)/abs(lastError))
+    errorCoeff = Kerror * (abs(distFromTarget)/(abs(calcSpeed.lastError) if calcSpeed.lastError !=0 else abs(distFromTarget)))
 
 
 
@@ -83,7 +87,7 @@ def calcSpeed(currTarget:list):
     speed = maxSpeed*multiplier
     
 
-    lastError = distFromTarget
+    calcSpeed.lastError = distFromTarget
     return max(speed,minSpeed) if speed>0 else min(speed,-minSpeed)
 
     #print(distFromTarget)
@@ -97,6 +101,7 @@ def main():
 
     noneCounter = 0
     lastSpeed = 100000
+    calcSpeed.lastError = 0
 
     while True:
         startTime=time.perf_counter()

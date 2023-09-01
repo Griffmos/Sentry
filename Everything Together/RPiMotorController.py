@@ -67,12 +67,12 @@ class stepperMotor:
         speedToSet = toDelay(radiansPerSecond) #make this min(MAX_SPEED, toDelay(radiansPerSeond)
         self.setDelay(speedToSet) 
         self.currSpeed=speedToSet
-        print(self.currSpeed)
+        #print(self.currSpeed)
 
     def setDelay(self, delay:int):
         self.arduino.write(bytes(str(delay), encoding='UTF-8'))
         self.arduino.write('\n'.encode())
-        print(delay)
+        #print(delay)
 
     
 

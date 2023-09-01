@@ -5,16 +5,16 @@ import time
 
 from threading import Thread
 
-maxSpeed:float=3.14
+maxSpeed:float=1.58
 minSpeed:float = RPiMotorController.toRadiansPerSecond(14000)
 maxArea:float = 307200 #camera frame size
 
 
-Karea:float=1
+Karea:float=0.2
 
-Kdist:float=1
+Kdist:float=0.3
 
-Kerror:float=1
+Kerror:float=0.3
 
 noneSpeedDivisor = 2
 TIMES_TARGET_NONE_TO_STOP = 2 
@@ -63,14 +63,19 @@ def calcSpeed(currTarget:list):
     errorCoeff = Kerror * (distFromTarget)/((calcSpeed.lastError) if calcSpeed.lastError !=0 else distFromTarget)
 
 
-    print(f"last error: {calcSpeed.lastError}")
+    #print(f"last error: {calcSpeed.lastError}")
 
+    
+    print(distCoeff)
+    print(errorCoeff)
+    print(areaCoeff)
+    
 
-
-
-    multiplier = (distCoeff*errorCoeff)+areaCoeff
+    multiplier = distCoeff+errorCoeff+areaCoeff
 
     multiplier = min(multiplier, 1)
+    
+    print(multiplier)
 
     
     #dampening term (not using)
@@ -86,6 +91,7 @@ def calcSpeed(currTarget:list):
 
     speed = maxSpeed*multiplier
     
+    print(f"speed: {speed}")
 
     calcSpeed.lastError = distFromTarget
     return direction*max(speed,minSpeed)

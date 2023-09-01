@@ -97,12 +97,12 @@ class tracker:
 
 
     def sendFrame(self):
-        startSend=time.perf_counter()
+        # ~ startSend=time.perf_counter()
         self.socket.sendall(bytearray(self.currFrame))
-        print(f"Send frame Time: {time.perf_counter()-startSend}")
+        # ~ print(f"Send frame Time: {time.perf_counter()-startSend}")
     
     def recieveTarget(self):
-        startRecv=time.perf_counter()
+        # ~ startRecv=time.perf_counter()
         bytes_in : bytes = []
 
         while len(bytes_in)<12:
@@ -128,15 +128,15 @@ class tracker:
             ury = numpy.uint16(bytes_in[11]) + 256*numpy.uint16(bytes_in[10])
 
             self.currTarget= [[x,y],[llx,lly,urx,ury]]
-        print(f"recv target time: {time.perf_counter()-startRecv}")
+        # ~ print(f"recv target time: {time.perf_counter()-startRecv}")
 
     def findTarget(self):
         if (self.currFrame is not None):
-            startFinding=time.perf_counter()
+            # ~ startFinding=time.perf_counter()
             self.sendFrame()
 
             self.recieveTarget()
-            print(f"find time: {time.perf_counter()-startFinding}")
+            # ~ print(f"find time: {time.perf_counter()-startFinding}")
             return True
         else:
             return False

@@ -21,7 +21,7 @@ STEPS_PER_REV=1600
 #utilities
 
 
-def toDelay(self,radiansPerSecond):
+def toDelay(radiansPerSecond):
         if (radiansPerSecond==0):
             return 0
         secsPerRev=(2*Pi)/radiansPerSecond
@@ -30,7 +30,7 @@ def toDelay(self,radiansPerSecond):
         
         return int(secsPerDelaymS)
     
-def toRadiansPerSecond(self, delay):
+def toRadiansPerSecond(delay):
     if (delay==0):
         return 0
         
@@ -48,7 +48,7 @@ class stepperMotor:
     
 
     def __init__(self):
-        self.arduino = serial.Serial('COM3', baudrate=9600, timeout=0.1) #port = '/dev/ttyACM0' for pi
+        self.arduino = serial.Serial('/dev/ttyACM0', baudrate=9600, timeout=0.1) #port = '/dev/ttyACM0' for pi, 'COM3' for computer
 
         
 
@@ -119,11 +119,11 @@ class stepperMotor:
 #     def setDelay(self,motorName,delay):
 #         self.motors[motorName].setDelay(delay)
 
-s = stepperMotor()
+# ~ s = stepperMotor()
 
-print(s.toDelay(0.285))
+# ~ print(toDelay(0.285))
 
-print (s.toRadiansPerSecond(s.toDelay(0.285)))
+# ~ print (toRadiansPerSecond(s.toDelay(0.285)))
     
 
     

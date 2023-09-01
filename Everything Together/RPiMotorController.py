@@ -15,7 +15,7 @@ MAX_SPEED:float=0 #TBD
 
 GEAR_RATIO:float=1/1
 
-STEPS_PER_REV=800
+STEPS_PER_REV=1600
 
 
 #utilities
@@ -105,7 +105,9 @@ class stepperMotor:
 #     def setDelay(self,motorName,delay):
 #         self.motors[motorName].setDelay(delay)
 
+s = stepperMotor()
 
+print(s.toDelay(0.285))
     
 
     

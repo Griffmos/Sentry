@@ -4,6 +4,7 @@ from time import sleep
 import time
 
 maxSpeed:float=1.58
+minSpeed:float = 0.285 #approx 14000 delay, the max delay
 
 Karea:float=0.5
 
@@ -42,7 +43,9 @@ def calcSpeed(currTarget:list):
 
     multiplier = min(multiplier, 1)
 
-    return maxSpeed*multiplier
+    speed = maxSpeed*multiplier
+
+    return max(speed,minSpeed) if speed>0 else min(speed,-minSpeed)
 
     #print(distFromTarget)
 

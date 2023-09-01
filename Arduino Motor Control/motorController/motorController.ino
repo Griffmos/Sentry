@@ -74,12 +74,12 @@ void processIncomingByte (const byte inByte)
 
 
 //hardware constants
-int NUM_STEPS=800;
+int NUM_STEPS=1600;
 
 //extreme constants
 long MIN_DELAY=25; 
 
-long MAX_DELAY=15000;
+long MAX_DELAY=14000;
 
 long STOP_SPEED=5000;
 
@@ -113,7 +113,7 @@ long requestedDelay=0;
 
 bool reqStop=true; //requested to stop
 
-bool reqDirection=true;
+bool reqDirection=true; //true is clockwise, false is ccw
 
 bool reqChangeDir=false;
 
@@ -140,6 +140,8 @@ void process_data (const char * data)
         reqChangeDir=true;
       }
 
+      Serial.println(requestedDelay);
+
       requestedDelay=abs(requestedDelay);
 
 
@@ -150,14 +152,17 @@ void process_data (const char * data)
         requestedDelay=MAX_DELAY;
         reqStop=true;
       }
+      else{
+        reqStop=false;
+      }
 
       
-
+      
       onOff=true;
     }
 
     
-    Serial.println(requestedDelay);
+    //Serial.println(requestedDelay);
   }  // end of process_data
 
 
@@ -172,7 +177,7 @@ int checkBadDelays(long delay, bool accelDir){ //true = going up in delay (down 
 }
 
 void step(long delay){
-    //currPos += (direction) ? 1 : -1;
+    currPos += (direction) ? 1 : -1;
     digitalWrite(8, HIGH);
     delayMicroseconds(delay);
     digitalWrite(8, LOW);
@@ -239,7 +244,7 @@ void loop() {
   // put your main code here, to run repeatedly: 
   // long currInput = getInput();
 
-  if (abs(currPos)>=NUM_STEPS){
+  if (abs(currPos)>=NUM_STEPS/2 && (reqDirection)==(currPos>0)){
     reqStop=true;
   }
 

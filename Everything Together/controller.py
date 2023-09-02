@@ -7,7 +7,7 @@ from threading import Thread
 
 maxSpeed:float=1.58
 minSpeed:float = RPiMotorController.toRadiansPerSecond(14000)
-maxArea:float = 307200 #camera frame size
+maxArea:float = 19200 #camera frame size
 
 
 Karea:float=0.2
@@ -36,17 +36,17 @@ def calcSpeed(currTarget:list):
     target:list=currTarget[0]
     
 
-    distFromTarget = 320-target[0]
+    distFromTarget = 160-target[0]
     
     direction = 1 if distFromTarget<1 else -1
     
     distFromTarget = abs(distFromTarget)
 
-    if (distFromTarget<25):
+    if (distFromTarget<10):
         return 0
     
 
-    distCoeff=Kdist*(distFromTarget/320)
+    distCoeff=Kdist*(distFromTarget/160)
 
     
     

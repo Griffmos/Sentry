@@ -53,6 +53,8 @@ class tracker:
 
             success, frame = self.cap.read()
 
+            frame = cv2.resize(frame, (160,120), interpolation=cv2.INTER_AREA)
+
             self.currFrame=frame
 
             

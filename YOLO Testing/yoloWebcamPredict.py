@@ -15,6 +15,10 @@ while cap.isOpened():
     # Read a frame from the video
     success, frame = cap.read()
 
+    frame = cv2.resize(frame, (160, 120), interpolation=cv2.INTER_AREA)
+
+    print(len(bytearray(frame)))
+
     if success:
         # Run YOLOv8 inference on the frame
         results = model.predict(source=frame, conf=0.70)

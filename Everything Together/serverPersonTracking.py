@@ -5,7 +5,7 @@ import socket
 import struct
 import time
 
-FRAME_BYTE_SIZE=921600
+FRAME_BYTE_SIZE=57600
 
 MODEL= YOLO('yolov8n.pt')
 
@@ -13,12 +13,12 @@ def recvFrame(s:socket.socket):
     startRecv=time.perf_counter()
     data:bytes = []
 
-    while len(data) < 921600:
-        data+=s.recv(921600-len(data))
+    while len(data) < FRAME_BYTE_SIZE:
+        data+=s.recv(FRAME_BYTE_SIZE-len(data))
 
     # print(bP)
     frame = numpy.asarray(data,numpy.uint8)
-    frame = numpy.reshape(frame, [480, 640, 3])
+    frame = numpy.reshape(frame, [120, 160, 3])
 
     print(f"recv frame time: {time.perf_counter()-startRecv}")
 

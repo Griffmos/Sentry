@@ -48,7 +48,7 @@ class stepperMotor:
     
 
     def __init__(self):
-        self.arduino = serial.Serial('/dev/ttyACM0', baudrate=9600, timeout=0.1) #port = '/dev/ttyACM0' for pi, 'COM3' for computer
+        self.arduino = serial.Serial('COM3', baudrate=9600, timeout=0.1) #port = '/dev/ttyACM0' for pi, 'COM3' for computer
 
         
 
@@ -72,6 +72,9 @@ class stepperMotor:
     def setDelay(self, delay:int):
         self.arduino.write(bytes(str(delay), encoding='UTF-8'))
         self.arduino.write('\n'.encode())
+
+        self.arduino.read()
+
         #print(delay)
 
     
@@ -126,7 +129,9 @@ class stepperMotor:
 # ~ print (toRadiansPerSecond(s.toDelay(0.285)))
     
 
-    
+# stepper:stepperMotor = stepperMotor()
+# while True:
+#     stepper.setDelay(input("enter a delay: "))
 
 
 

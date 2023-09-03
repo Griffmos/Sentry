@@ -180,7 +180,7 @@ void process_data (const char * data)
 // }
 
 void step(long delay){
-    currPos += (direction) ? 1 : -1;
+    //currPos += (direction) ? 1 : -1;
     digitalWrite(8, HIGH);
     delayMicroseconds(delay);
     digitalWrite(8, LOW);

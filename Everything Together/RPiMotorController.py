@@ -70,6 +70,7 @@ class stepperMotor:
         #print(self.currSpeed)
 
     def setDelay(self, delay:int):
+        delay=delay
         self.arduino.write(bytes(str(delay), encoding='UTF-8'))
         self.arduino.write('\n'.encode())
 

@@ -10,14 +10,14 @@ minSpeed:float = RPiMotorController.toRadiansPerSecond(14000)
 maxArea:float = 19200 #camera frame size
 
 
-Karea:float=0.2
+Karea:float=0.1
 
-Kdist:float=0.3
+Kdist:float=0.1
 
-Kerror:float=0.3
+Kerror:float=0.1
 
 noneSpeedDivisor = 2
-TIMES_TARGET_NONE_TO_STOP = 2 
+TIMES_TARGET_NONE_TO_STOP = 1
 
 # ~ Kdamp:float=0.3
 
@@ -36,17 +36,19 @@ def calcSpeed(currTarget:list):
     target:list=currTarget[0]
     
 
-    distFromTarget = 160-target[0]
+    distFromTarget = 80-target[0]
     
     direction = 1 if distFromTarget<1 else -1
     
     distFromTarget = abs(distFromTarget)
+    
+    print(distFromTarget)
 
     if (distFromTarget<10):
         return 0
     
 
-    distCoeff=Kdist*(distFromTarget/160)
+    distCoeff=Kdist*(distFromTarget/80)
 
     
     
@@ -66,16 +68,16 @@ def calcSpeed(currTarget:list):
     #print(f"last error: {calcSpeed.lastError}")
 
     
-    print(distCoeff)
-    print(errorCoeff)
-    print(areaCoeff)
+    # ~ print(distCoeff)
+    # ~ print(errorCoeff)
+    # ~ print(areaCoeff)
     
 
     multiplier = distCoeff+errorCoeff+areaCoeff
 
     multiplier = min(multiplier, 1)
     
-    print(multiplier)
+    # ~ print(multiplier)
 
     
     #dampening term (not using)
@@ -92,6 +94,8 @@ def calcSpeed(currTarget:list):
     speed = maxSpeed*multiplier
     
     print(f"speed: {speed}")
+    print(f"multiplier: {multiplier}")
+    print(f"direction: {direction}")
 
     calcSpeed.lastError = distFromTarget
     return direction*max(speed,minSpeed)
@@ -136,7 +140,7 @@ def main():
 
             lastSpeed=currSpeed
         
-        sleep(0.1)
+        
 
 
 main()    

@@ -15,11 +15,32 @@ MAX_SPEED:float=0 #TBD
 
 GEAR_RATIO:float=1/1
 
-STEPS_PER_REV=800
+STEPS_PER_REV=1600
 
 
 #utilities
 
+
+def toDelay(radiansPerSecond):
+        if (radiansPerSecond==0):
+            return 0
+        secsPerRev=(2*Pi)/radiansPerSecond
+        secsPerPulse=(secsPerRev/(STEPS_PER_REV*GEAR_RATIO))
+        secsPerDelaymS=(secsPerPulse*microsPerSec)*0.5
+        
+        return int(secsPerDelaymS)
+    
+def toRadiansPerSecond(delay):
+    if (delay==0):
+        return 0
+        
+    secsPerStep = delay/(0.5*microsPerSec)
+
+    secsPerRev = secsPerStep*(STEPS_PER_REV*GEAR_RATIO)
+
+    radsPerSec = 1/(secsPerRev/(2*Pi))
+
+    return radsPerSec
 
 
 class stepperMotor:
@@ -27,7 +48,7 @@ class stepperMotor:
     
 
     def __init__(self):
-        self.arduino = serial.Serial('COM3', baudrate=9600, timeout=0.1) #port = '/dev/ttyACM0' for pi
+        self.arduino = serial.Serial('COM3', baudrate=9600, timeout=0.1) #port = '/dev/ttyACM0' for pi, 'COM3' for computer
 
         
 
@@ -39,26 +60,23 @@ class stepperMotor:
         self.setSpeed(0)
 
 
-    def toDelay(self,radiansPerSecond):
-        if (radiansPerSecond==0):
-            return 0
-        secsPerRev=(2*Pi)/radiansPerSecond
-        secsPerPulse=(secsPerRev/(STEPS_PER_REV*GEAR_RATIO))
-        secsPerDelaymS=(secsPerPulse*microsPerSec)*0.5
-        
-        return int(secsPerDelaymS)
+    
 
 
     def setSpeed(self, radiansPerSecond:float):
-        speedToSet = self.toDelay(radiansPerSecond) #make this min(MAX_SPEED, toDelay(radiansPerSeond)
+        speedToSet = toDelay(radiansPerSecond) #make this min(MAX_SPEED, toDelay(radiansPerSeond)
         self.setDelay(speedToSet) 
         self.currSpeed=speedToSet
-        print(self.currSpeed)
+        #print(self.currSpeed)
 
     def setDelay(self, delay:int):
+        delay=delay
         self.arduino.write(bytes(str(delay), encoding='UTF-8'))
         self.arduino.write('\n'.encode())
-        print(delay)
+
+        self.arduino.read()
+
+        #print(delay)
 
     
 
@@ -105,10 +123,16 @@ class stepperMotor:
 #     def setDelay(self,motorName,delay):
 #         self.motors[motorName].setDelay(delay)
 
+# ~ s = stepperMotor()
 
+# ~ print(toDelay(0.285))
+
+# ~ print (toRadiansPerSecond(s.toDelay(0.285)))
     
 
-    
+# stepper:stepperMotor = stepperMotor()
+# while True:
+#     stepper.setDelay(input("enter a delay: "))
 
 
 

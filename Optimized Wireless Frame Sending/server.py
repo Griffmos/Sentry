@@ -36,10 +36,10 @@ def recvNewPixels(s:socket.socket):
 
     data=data[4:len(data)]
 
-    while (len(data)<bytesLength):
+    while (len(data)<bytesLength*2):#because first batch are the bytes greater than 2
         data+=s.recv(bytesLength-len(data))
 
-    
+    newPixels = numpy.asarray(data, numpy.uint8)
 
 def sendTarget(s:socket.socket, target):
     startSend=time.perf_counter()

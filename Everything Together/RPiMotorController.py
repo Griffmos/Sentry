@@ -48,7 +48,7 @@ class stepperMotor:
     
 
     def __init__(self):
-        self.arduino = serial.Serial('COM3', baudrate=9600, timeout=0.1) #port = '/dev/ttyACM0' for pi, 'COM3' for computer
+        self.arduino = serial.Serial('/dev/ttyACM0', baudrate=9600, timeout=0.1) #port = '/dev/ttyACM0' for pi, 'COM3' for computer
 
         
 

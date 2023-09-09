@@ -12,9 +12,9 @@ maxArea:float = 19200 #camera frame size
 
 Karea:float=0.1
 
-Kdist:float=0.1
+Kdist:float=0.2
 
-Kerror:float=0.1
+Kerror:float=0.1    
 
 noneSpeedDivisor = 2
 TIMES_TARGET_NONE_TO_STOP = 1

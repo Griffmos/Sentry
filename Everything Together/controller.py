@@ -1,13 +1,15 @@
 import clientPersonTracking
 import RPiMotorController
+import constants
 from time import sleep
 import time
 
 from threading import Thread
+import gunController
 
 maxSpeed:float=1.58
 minSpeed:float = RPiMotorController.toRadiansPerSecond(14000)
-maxArea:float = 19200 #camera frame size
+maxArea:float = constants.SCREEN_AREA #camera frame size
 
 
 Karea:float=0.1
@@ -16,8 +18,11 @@ Kdist:float=0.2
 
 Kerror:float=0.1    
 
-noneSpeedDivisor = 2
+NONE_TARGET_SPEED_DIVISOR = 2
 TIMES_TARGET_NONE_TO_STOP = 1
+#pixels
+SHOOTING_DISTANCE = 20 
+STOPPING_DISTANCE = 10
 
 # ~ Kdamp:float=0.3
 
@@ -36,7 +41,7 @@ def calcSpeed(currTarget:list):
     target:list=currTarget[0]
     
 
-    distFromTarget = 80-target[0]
+    distFromTarget = (constants.SCREEN_WIDTH/2)-target[0]
     
     direction = 1 if distFromTarget<1 else -1
     
@@ -44,11 +49,11 @@ def calcSpeed(currTarget:list):
     
     print(distFromTarget)
 
-    if (distFromTarget<10):
+    if (distFromTarget<STOPPING_DISTANCE):
         return 0
     
 
-    distCoeff=Kdist*(distFromTarget/80)
+    distCoeff=Kdist*(distFromTarget/(constants.SCREEN_WIDTH/2))
 
     
     
@@ -108,6 +113,7 @@ def main():
 
     tracker = clientPersonTracking.tracker(True, '192.168.1.96', 8888) #.43 for desktop, .96 for laptop
     motor = RPiMotorController.stepperMotor()
+    gun = gunController.Nemesis()
 
     noneCounter = 0
     lastSpeed = 100000
@@ -126,17 +132,24 @@ def main():
         if (currTarget is None):
             if (noneCounter<TIMES_TARGET_NONE_TO_STOP):
                 noneCounter+=1
-                motor.setSpeed(lastSpeed/noneSpeedDivisor)
+                motor.setSpeed(lastSpeed/NONE_TARGET_SPEED_DIVISOR)
             else:
                 motor.setSpeed(0)
+                offThread = Thread(gun.off)
+                offThread.start()
         else:
             noneCounter = 0
 
-            currSpeed:float = calcSpeed(tracker.currTarget)
+            revThread = Thread(gun.rev)
+            revThread.start()
 
-
+            currSpeed:float = calcSpeed(currTarget)
 
             motor.setSpeed(currSpeed)
+
+            if (abs((constants.SCREEN_WIDTH/2)-currTarget)<SHOOTING_DISTANCE):
+                shootingThread = Thread(gun.shoot)
+                shootingThread.start()
 
             lastSpeed=currSpeed
         

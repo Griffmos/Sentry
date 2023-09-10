@@ -6,17 +6,19 @@ nem = gunController.Nemesis()
 print("revving")
 nem.rev()
 
-sleep(2)
+sleep(5)
 
 print("unrevving")
 nem.unrev()
 
-sleep(2)
+sleep(5)
 
 print("revving and shooting")
 nem.rev()
-sleep(1)
+sleep(2)
 nem.shoot()
+
+sleep(5)
 
 print("turning off")
 nem.off()

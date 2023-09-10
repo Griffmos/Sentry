@@ -3,7 +3,7 @@ from time import sleep
 
 
 TRIGGER_PIN = 32
-REV_PIN = -1
+REV_PIN = 36
 
 class Nemesis: 
 
@@ -35,6 +35,8 @@ class Nemesis:
         sleep(1)
         
         GPIO.output(REV_PIN, GPIO.HIGH)
+        
+        GPIO.cleanup()
 
         
 

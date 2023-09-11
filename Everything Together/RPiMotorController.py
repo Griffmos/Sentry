@@ -78,6 +78,10 @@ class stepperMotor:
 
         #print(delay)
 
+    def terminate(self):
+         self.arduino.write('q'.encode())
+         self.arduino.write('\n'.encode())
+
     
 
 

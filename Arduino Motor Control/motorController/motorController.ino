@@ -3,6 +3,10 @@
 
 char START_CHAR = 'r';
 char STOP_CHAR = 'q';
+
+void(* resetFunc) (void) = 0; //declare reset function @ address 0
+
+
 void setup() {
   // put your setup code here, to run once:
 
@@ -123,6 +127,11 @@ bool reqChangeDir = false;
 void process_data(const char* data) {
   // for now just display it
   // (but you could compare it to some value, convert to an integer, etc.)
+
+    if (data[0]==STOP_CHAR){
+        resetFunc();
+    }
+
   requestedDelay = atoi(data);
 
   if (requestedDelay == 0) {

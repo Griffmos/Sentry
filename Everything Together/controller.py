@@ -3,6 +3,7 @@ import RPiMotorController
 import constants
 from time import sleep
 import time
+import keyboard
 
 from threading import Thread
 import gunController
@@ -109,17 +110,34 @@ def calcSpeed(currTarget:list):
 
 
 
+
+
+    
+
+
 def main():
 
     tracker = clientPersonTracking.tracker(True, '192.168.1.96', 8888) #.43 for desktop, .96 for laptop
     motor = RPiMotorController.stepperMotor()
     gun = gunController.Nemesis()
 
+
+    stop=False
+    def quit():
+        tracker.terminateTracker()
+        motor.terminate()
+        gun.shutdown()
+        stop=True
+
+
+
+    keyboard.add_hotkey('q', quit)
+
     noneCounter = 0
     lastSpeed = 100000
     calcSpeed.lastError = 0
 
-    while True:
+    while not stop:
         startTime=time.perf_counter()
         success=tracker.findTarget()
 

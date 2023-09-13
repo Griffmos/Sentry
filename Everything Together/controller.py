@@ -153,21 +153,21 @@ def main():
                 motor.setSpeed(lastSpeed/NONE_TARGET_SPEED_DIVISOR)
             else:
                 motor.setSpeed(0)
-                offThread = Thread(gun.off)
-                offThread.start()
+                gun.reqShoot(False)
+                gun.reqRev(False)
         else:
             noneCounter = 0
 
-            revThread = Thread(gun.rev)
-            revThread.start()
+            gun.reqRev(True)
 
             currSpeed:float = calcSpeed(currTarget)
 
             motor.setSpeed(currSpeed)
 
             if (abs((constants.SCREEN_WIDTH/2)-currTarget)<SHOOTING_DISTANCE):
-                shootingThread = Thread(gun.shoot)
-                shootingThread.start()
+                gun.reqShoot(True)
+            else:
+                gun.reqShoot(False)
 
             lastSpeed=currSpeed
         

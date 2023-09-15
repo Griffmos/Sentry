@@ -1,7 +1,7 @@
 import constants
 
 class PIDcontroller:
-    def __init__(self, maxSpeed, minSpeed, errTol, kP):
+    def __init__(self, maxSpeed, minSpeed, errTol, kP, kD):
 
         self.maxSpeed = maxSpeed
         self.minSpeed = minSpeed
@@ -9,6 +9,9 @@ class PIDcontroller:
         self.errorTolerance = errTol
 
         self.kP = kP
+        self.kD = kD
+
+        self.lastError=0
 
     
     def calculate(self, currTarget):
@@ -19,6 +22,17 @@ class PIDcontroller:
         if (abs(error)<self.errorTolerance):
             return 0
 
-        P = self.kP*error
+        P=self.calcP(error)
 
-        return P
+        D=self.calcD(error, self.lastError)
+        
+
+
+        lastError=error
+        return min(P+D,self.maxSpeed)
+    
+    def calcP(self, error):
+        return self.kP * error
+    
+    def calcD(self, error, lastError):
+        return self.kD * (error-lastError)

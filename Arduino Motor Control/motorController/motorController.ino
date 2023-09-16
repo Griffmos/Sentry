@@ -101,7 +101,7 @@ unsigned long long lastTime = millis();
 
 long currDelay = STOP_SPEED;
 
-bool direction = true;  // true = clockwise, positive number || false = counterclockwise, negative number
+int direction = 0;  //1 is clockwise, -1 is ccw, 0 is uninitialized
 
 int currPos = 0;
 
@@ -115,7 +115,7 @@ long requestedDelay = 0;
 
 bool reqStop = true;  //requested to stop
 
-bool reqDirection = true;  //true is clockwise, false is ccw
+int reqDirection = 0;  //1 is clockwise, -1 is ccw, 0 is uninitialized
 
 bool reqChangeDir = false;
 
@@ -138,14 +138,19 @@ void process_data(const char* data) {
 
     reqStop = true;
     //requestedDelay=max(STOP_SPEED,currDelay);
-  } else {
-    reqDirection = (requestedDelay > 0) ? true : false;
+  }
+    else {
+    reqDirection = (requestedDelay > 0) ? 1 : -1;
 
-    if (reqDirection != direction) {
+
+    if (reqDirection !=0 && reqDirection != direction) {
       reqChangeDir = true;
     }
 
-    //Serial.println(requestedDelay);
+    // Serial.println(requestedDelay);
+    // Serial.println(reqDirection);
+    // Serial.println(direction);
+    //Serial.println(reqChangeDir);
 
     requestedDelay = abs(requestedDelay);
 
@@ -182,7 +187,7 @@ void process_data(const char* data) {
 // }
 
 void step(long delay) {
-  currPos += (direction) ? 1 : -1;
+  currPos +=direction;
   digitalWrite(8, HIGH);
   delayMicroseconds(delay);
   digitalWrite(8, LOW);
@@ -245,7 +250,10 @@ void loop() {
   // put your main code here, to run repeatedly:
   // long currInput = getInput();
 
-  if (abs(currPos) >= NUM_STEPS / 2 && (reqDirection) == (currPos > 0)) {
+
+  
+
+  if (abs(currPos) >= NUM_STEPS / 2 && (reqDirection>0) == (currPos > 0)) {
     reqStop = true;
   }
 
@@ -264,9 +272,11 @@ void loop() {
   } else if (reqChangeDir) {
     if (currDelay < STOP_SPEED) {
       deccelerate();
-    } else {
-      direction = reqDirection;
-      (direction) ? digitalWrite(10, HIGH) : digitalWrite(10, LOW);  //high is clockwise, low is counterclockwise
+    } 
+    else {
+        direction = reqDirection;
+      
+      (direction==1) ? digitalWrite(10, HIGH) : digitalWrite(10, LOW);  //high is clockwise, low is counterclockwise
       reqChangeDir = false;
     }
   } else if (onOff) {

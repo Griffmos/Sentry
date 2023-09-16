@@ -28,8 +28,8 @@ class PIDcontroller:
         
 
 
-        lastError=error
-        return min(P+D,self.maxSpeed)
+        self.lastError=error
+        return -(P+D if (abs(P+D)<self.maxSpeed) else self.maxSpeed if P+D>0 else -self.maxSpeed) #negative at beginning to go the right way
     
     def calcP(self, error):
         return self.kP * error

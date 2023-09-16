@@ -3,7 +3,8 @@ import RPiMotorController
 import constants
 from time import sleep
 import time
-import keyboard
+import PIDcontroller
+#import keyboard
 
 from threading import Thread
 import gunController
@@ -119,7 +120,8 @@ def main():
 
     tracker = clientPersonTracking.tracker(True, '192.168.1.96', 8888) #.43 for desktop, .96 for laptop
     motor = RPiMotorController.stepperMotor()
-    gun = gunController.Nemesis()
+    gun = gunController.Nemesis() 
+    PID = PIDcontroller.PIDcontroller(maxSpeed, minSpeed, 0, 0.02, 0.005)
 
 
     stop=False
@@ -131,7 +133,7 @@ def main():
 
 
 
-    keyboard.add_hotkey('q', quit)
+    #keyboard.add_hotkey('q', quit)
 
     noneCounter = 0
     lastSpeed = 100000
@@ -160,11 +162,11 @@ def main():
 
             gun.reqRev(True)
 
-            currSpeed:float = calcSpeed(currTarget)
+            currSpeed:float = PID.calculate(currTarget)
 
             motor.setSpeed(currSpeed)
 
-            if (abs((constants.SCREEN_WIDTH/2)-currTarget)<SHOOTING_DISTANCE):
+            if (abs((constants.SCREEN_WIDTH/2)-currTarget[0][0])<SHOOTING_DISTANCE):
                 gun.reqShoot(True)
             else:
                 gun.reqShoot(False)

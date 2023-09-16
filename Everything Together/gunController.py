@@ -6,9 +6,14 @@ from threading import Thread
 TRIGGER_PIN = 32
 REV_PIN = 36
 
+
+    
+    
+
 class Nemesis: 
 
     def __init__(self):
+        print("inited gun")
         GPIO.setmode(GPIO.BOARD)
         
         GPIO.setup(TRIGGER_PIN, GPIO.OUT)
@@ -25,7 +30,7 @@ class Nemesis:
 
         self.turnOff=False
 
-        self.schedulerThread = Thread(self.scheduler)
+        self.schedulerThread = Thread(target=self.scheduler)
         self.schedulerThread.start()
 
 
@@ -86,6 +91,27 @@ class Nemesis:
         self.turnOff=True
         GPIO.cleanup()
 
+
+
+
+def main():
+    nem = Nemesis()
+    
+    nem.rev()
+    sleep(1)
+    nem.unrev()
+    sleep(1)
+    nem.shoot()
+    sleep(2)
+    nem.unshoot()
+    sleep(2)
+    nem.unrev()
+    sleep(1)
+    
+    nem.shutdown()
+    
+    
+#main()
         
 
         

@@ -1,6 +1,7 @@
 import clientPersonTracking
 import RPiMotorController
 import constants
+import RPi.GPIO as GPIO
 from time import sleep
 import time
 import PIDcontroller
@@ -25,6 +26,9 @@ TIMES_TARGET_NONE_TO_STOP = 1
 #pixels
 SHOOTING_DISTANCE = 20 
 STOPPING_DISTANCE = 10
+
+
+STOP_BUTTON_PIN = 15
 
 # ~ Kdamp:float=0.3
 
@@ -122,6 +126,10 @@ def main():
     motor = RPiMotorController.stepperMotor()
     gun = gunController.Nemesis() 
     PID = PIDcontroller.PIDcontroller(maxSpeed, minSpeed, 0, 0.02, 0.005)
+    
+    GPIO.setmode(GPIO.BOARD)
+    GPIO.setup(STOP_BUTTON_PIN, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
+    
 
 
     stop=False
@@ -136,7 +144,7 @@ def main():
     #keyboard.add_hotkey('q', quit)
 
     noneCounter = 0
-    lastSpeed = 100000
+    lastSpeed = 0
     calcSpeed.lastError = 0
 
     while not stop:
@@ -145,11 +153,13 @@ def main():
 
     
         
-        print(tracker.currTarget)
-        print(f"total time: {time.perf_counter()-startTime}")
+        
+        #print(f"total time: {time.perf_counter()-startTime}")
 
         currTarget = tracker.currTarget
+        print(f"currTarget: {currTarget}")
         if (currTarget is None):
+            PID.lastError = -1
             if (noneCounter<TIMES_TARGET_NONE_TO_STOP):
                 noneCounter+=1
                 motor.setSpeed(lastSpeed/NONE_TARGET_SPEED_DIVISOR)
@@ -162,7 +172,7 @@ def main():
 
             gun.reqRev(True)
 
-            currSpeed:float = PID.calculate(currTarget)
+            currSpeed:float = -PID.calculate(currTarget)
 
             motor.setSpeed(currSpeed)
 
@@ -172,6 +182,14 @@ def main():
                 gun.reqShoot(False)
 
             lastSpeed=currSpeed
+            
+        
+        if (GPIO.input(STOP_BUTTON_PIN)==GPIO.HIGH):
+            print("stopping")
+            quit()
+            GPIO.cleanup()  
+            
+        print(f"speed: {motor.currSpeed}")
         
         
 

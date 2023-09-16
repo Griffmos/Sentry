@@ -20,6 +20,8 @@ STEPS_PER_REV=1600
 
 #utilities
 
+#POSITIVE is ccw, NEGATIVE is cw
+
 
 def toDelay(radiansPerSecond):
         if (radiansPerSecond==0):
@@ -50,7 +52,8 @@ class stepperMotor:
     def __init__(self):
         print("inited motor")
         self.arduino = serial.Serial('/dev/ttyACM0', baudrate=9600, timeout=0.1) #port = '/dev/ttyACM0' for pi, 'COM3' for computer
-
+        
+        self.currSpeed=0
         
 
         sleep(2)
@@ -135,9 +138,9 @@ class stepperMotor:
 # ~ print (toRadiansPerSecond(s.toDelay(0.285)))
     
 
-# stepper:stepperMotor = stepperMotor()
-# while True:
-#     stepper.setDelay(input("enter a delay: "))
+# ~ stepper:stepperMotor = stepperMotor()
+
+# ~ stepper.setSpeed(0.5)
 
 
 

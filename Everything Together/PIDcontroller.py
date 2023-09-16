@@ -11,7 +11,7 @@ class PIDcontroller:
         self.kP = kP
         self.kD = kD
 
-        self.lastError=0
+        self.lastError=-1
 
     
     def calculate(self, currTarget):
@@ -29,10 +29,24 @@ class PIDcontroller:
 
 
         self.lastError=error
-        return -(P+D if (abs(P+D)<self.maxSpeed) else self.maxSpeed if P+D>0 else -self.maxSpeed) #negative at beginning to go the right way
+        
+        PD = P+D
+        
+        print(f"P+D: {PD}")
+        
+        direction = 1 if PD>0 else -1
+        
+        PD = abs(PD)
+        
+        if (PD<self.minSpeed):
+                return direction*self.minSpeed
+        if (PD>self.maxSpeed):
+                return direction*self.maxSpeed
+        return direction*PD
+        
     
     def calcP(self, error):
         return self.kP * error
     
     def calcD(self, error, lastError):
-        return self.kD * (error-lastError)
+        return self.kD * (error-lastError) if (self.lastError!=-1) else 0

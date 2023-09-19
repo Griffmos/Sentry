@@ -2,20 +2,13 @@ from time import sleep
 import serial;
 import numpy
 import math
+import constants
 
 
 #constants
-Pi:float = 3.14159
-microsPerSec=1000000
+
 
 #motor constants
-DEGREES_PER_STEP=0.9
-
-MAX_SPEED:float=0 #TBD
-
-GEAR_RATIO:float=1/1
-
-STEPS_PER_REV=1600
 
 
 #utilities
@@ -26,9 +19,9 @@ STEPS_PER_REV=1600
 def toDelay(radiansPerSecond):
         if (radiansPerSecond==0):
             return 0
-        secsPerRev=(2*Pi)/radiansPerSecond
-        secsPerPulse=(secsPerRev/(STEPS_PER_REV*GEAR_RATIO))
-        secsPerDelaymS=(secsPerPulse*microsPerSec)*0.5
+        secsPerRev=(2*constants.Pi)/radiansPerSecond
+        secsPerPulse=(secsPerRev/(constants.STEPS_PER_REV*constants.GEAR_RATIO))
+        secsPerDelaymS=(secsPerPulse*constants.microsPerSec)*0.5
         
         return int(secsPerDelaymS)
     
@@ -36,11 +29,11 @@ def toRadiansPerSecond(delay):
     if (delay==0):
         return 0
         
-    secsPerStep = delay/(0.5*microsPerSec)
+    secsPerStep = delay/(0.5*constants.microsPerSec)
 
-    secsPerRev = secsPerStep*(STEPS_PER_REV*GEAR_RATIO)
+    secsPerRev = secsPerStep*(constants.STEPS_PER_REV*constants.GEAR_RATIO)
 
-    radsPerSec = 1/(secsPerRev/(2*Pi))
+    radsPerSec = 1/(secsPerRev/(2*constants.Pi))
 
     return radsPerSec
 
@@ -81,6 +74,12 @@ class stepperMotor:
         self.arduino.read()
 
         #print(delay)
+
+    def getPos(self):
+        self.arduino.write('g'.encode())
+        self.arduino.write('\n'.encode())
+
+        return int.from_bytes(self.arduino.read(),"big",signed=True)
 
     def terminate(self):
          self.arduino.write('q'.encode())

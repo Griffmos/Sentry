@@ -3,6 +3,7 @@
 
 char START_CHAR = 'r';
 char STOP_CHAR = 'q';
+char RETURN_CHAR = 'g'
 
 void(* resetFunc) (void) = 0; //declare reset function @ address 0
 
@@ -74,7 +75,9 @@ void processIncomingByte(const byte inByte) {
 
 
 //hardware constants
-int NUM_STEPS = 1600;
+int GEAR_RATIO = 1
+
+int NUM_STEPS_IN_BIG_GEAR_REV = GEAR_RATIO*1600;
 
 //extreme constants
 long MIN_DELAY = 50;
@@ -82,6 +85,7 @@ long MIN_DELAY = 50;
 long MAX_DELAY = 15000;
 
 long STOP_SPEED = 5000;
+
 
 
 //performance constants
@@ -120,7 +124,9 @@ int reqDirection = 0;  //1 is clockwise, -1 is ccw, 0 is uninitialized
 bool reqChangeDir = false;
 
 
-
+void returnPos(){
+    return currPos;
+}
 
 
 //http://www.gammon.com.au/serial
@@ -131,44 +137,50 @@ void process_data(const char* data) {
     if (data[0]==STOP_CHAR){
         resetFunc();
     }
+    if (data[0]==RETURN_CHAR){
+        Serial.write(returnPos());
+    }
+    else{
+        requestedDelay = atoi(data);
 
-  requestedDelay = atoi(data);
+        if (requestedDelay == 0) {
 
-  if (requestedDelay == 0) {
-
-    reqStop = true;
-    //requestedDelay=max(STOP_SPEED,currDelay);
-  }
-    else {
-    reqDirection = (requestedDelay > 0) ? 1 : -1;
+        reqStop = true;
+        //requestedDelay=max(STOP_SPEED,currDelay);
+        }
+        else {
+            reqDirection = (requestedDelay > 0) ? 1 : -1;
 
 
-    if (reqDirection !=0 && reqDirection != direction) {
-      reqChangeDir = true;
+            if (reqDirection !=0 && reqDirection != direction) {
+                reqChangeDir = true;
+            }
+
+            // Serial.println(requestedDelay);
+            // Serial.println(reqDirection);
+            // Serial.println(direction);
+            //Serial.println(reqChangeDir);
+
+            requestedDelay = abs(requestedDelay);
+
+
+            if (requestedDelay < MIN_DELAY) {
+            requestedDelay = MIN_DELAY;
+            }
+            if (requestedDelay > MAX_DELAY) {
+            requestedDelay = MAX_DELAY;
+            reqStop = true;
+            } else {
+            reqStop = false;
+            }
+
+
+            Serial.write(1);
+            onOff = true;
+         }
     }
 
-    // Serial.println(requestedDelay);
-    // Serial.println(reqDirection);
-    // Serial.println(direction);
-    //Serial.println(reqChangeDir);
-
-    requestedDelay = abs(requestedDelay);
-
-
-    if (requestedDelay < MIN_DELAY) {
-      requestedDelay = MIN_DELAY;
-    }
-    if (requestedDelay > MAX_DELAY) {
-      requestedDelay = MAX_DELAY;
-      reqStop = true;
-    } else {
-      reqStop = false;
-    }
-
-
-    Serial.write(1);
-    onOff = true;
-  }
+  
 
 
   //Serial.println(requestedDelay);
@@ -253,7 +265,7 @@ void loop() {
 
   
 
-  if (abs(currPos) >= NUM_STEPS / 2 && (reqDirection>0) == (currPos > 0)) {
+  if (abs(currPos) >= NUM_STEPS_IN_BIG_GEAR_REV / 2 && (reqDirection>0) == (currPos > 0)) {
     reqStop = true;
   }
 

@@ -144,8 +144,11 @@ class stepperMotor:
 
 
 
-
-
+def main():
+     stepper:stepperMotor = stepperMotor()
+     while True:
+          print(stepper.getPos())
+          sleep(0.01)
 
 
 

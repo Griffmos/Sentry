@@ -16,26 +16,7 @@ import constants
 #POSITIVE is ccw, NEGATIVE is cw
 
 
-def toDelay(radiansPerSecond):
-        if (radiansPerSecond==0):
-            return 0
-        secsPerRev=(2*constants.Pi)/radiansPerSecond
-        secsPerPulse=(secsPerRev/(constants.STEPS_PER_REV*constants.GEAR_RATIO))
-        secsPerDelaymS=(secsPerPulse*constants.microsPerSec)*0.5
-        
-        return int(secsPerDelaymS)
-    
-def toRadiansPerSecond(delay):
-    if (delay==0):
-        return 0
-        
-    secsPerStep = delay/(0.5*constants.microsPerSec)
 
-    secsPerRev = secsPerStep*(constants.STEPS_PER_REV*constants.GEAR_RATIO)
-
-    radsPerSec = 1/(secsPerRev/(2*constants.Pi))
-
-    return radsPerSec
 
 
 class stepperMotor:
@@ -61,7 +42,7 @@ class stepperMotor:
 
 
     def setSpeed(self, radiansPerSecond:float):
-        speedToSet = toDelay(radiansPerSecond) #make this min(MAX_SPEED, toDelay(radiansPerSeond)
+        speedToSet = constants.conversions.toDelay(radiansPerSecond) #make this min(MAX_SPEED, toDelay(radiansPerSeond)
         self.setDelay(speedToSet) 
         self.currSpeed=speedToSet
         #print(self.currSpeed)
@@ -78,8 +59,9 @@ class stepperMotor:
     def getPos(self):
         self.arduino.write('g'.encode())
         self.arduino.write('\n'.encode())
+        
 
-        return int.from_bytes(self.arduino.read(),"big",signed=True)
+        return int.from_bytes(self.arduino.read()+self.arduino.read(),"big",signed=True)
 
     def terminate(self):
          self.arduino.write('q'.encode())
@@ -145,11 +127,17 @@ class stepperMotor:
 
 
 def main():
-     stepper:stepperMotor = stepperMotor()
-     while True:
-          print(stepper.getPos())
-          sleep(0.01)
+        stepper:stepperMotor = stepperMotor()
+        stepper.setSpeed(0.3)
+        
+        while True:
+            sleep(0.01)
+     
+            print(stepper.getPos())
+        
+          
 
+#main()
 
 
 

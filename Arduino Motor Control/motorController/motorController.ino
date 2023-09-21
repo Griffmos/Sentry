@@ -1,9 +1,8 @@
 
-#include "Keyboard.h"
 
 char START_CHAR = 'r';
 char STOP_CHAR = 'q';
-char RETURN_CHAR = 'g'
+char RETURN_CHAR = 'g';
 
 void(* resetFunc) (void) = 0; //declare reset function @ address 0
 
@@ -75,7 +74,7 @@ void processIncomingByte(const byte inByte) {
 
 
 //hardware constants
-int GEAR_RATIO = 1
+int GEAR_RATIO = 1;
 
 int NUM_STEPS_IN_BIG_GEAR_REV = GEAR_RATIO*1600;
 
@@ -124,7 +123,7 @@ int reqDirection = 0;  //1 is clockwise, -1 is ccw, 0 is uninitialized
 bool reqChangeDir = false;
 
 
-void returnPos(){
+int16_t returnPos(){
     return currPos;
 }
 

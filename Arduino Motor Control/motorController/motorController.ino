@@ -123,8 +123,18 @@ int reqDirection = 0;  //1 is clockwise, -1 is ccw, 0 is uninitialized
 bool reqChangeDir = false;
 
 
+<<<<<<< Updated upstream
 int16_t returnPos(){
     return currPos;
+=======
+void returnPos(){
+    char num[2];
+    num[0]=currPos/255;
+    num[1]=currPos%255;
+    //Serial.println(num);
+    Serial.write(num[0]);
+    Serial.write(num[1]);
+>>>>>>> Stashed changes
 }
 
 
@@ -137,7 +147,7 @@ void process_data(const char* data) {
         resetFunc();
     }
     if (data[0]==RETURN_CHAR){
-        Serial.write(returnPos());
+        returnPos();
     }
     else{
         requestedDelay = atoi(data);
@@ -301,4 +311,6 @@ void loop() {
       deccelerate();
     }
   }
-}
+    
+    
+ }

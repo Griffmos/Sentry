@@ -123,10 +123,7 @@ int reqDirection = 0;  //1 is clockwise, -1 is ccw, 0 is uninitialized
 bool reqChangeDir = false;
 
 
-<<<<<<< Updated upstream
-int16_t returnPos(){
-    return currPos;
-=======
+
 void returnPos(){
     char num[2];
     num[0]=currPos/255;
@@ -134,7 +131,6 @@ void returnPos(){
     //Serial.println(num);
     Serial.write(num[0]);
     Serial.write(num[1]);
->>>>>>> Stashed changes
 }
 
 

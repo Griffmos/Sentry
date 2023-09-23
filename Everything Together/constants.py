@@ -11,7 +11,7 @@ microsPerSec=1000000
 #little gear
 STEPS_PER_REV=1600
 
-GEAR_RATIO:float=1/1
+GEAR_RATIO:float=10/1
 
 DEGREES_PER_STEP:float=360.0/STEPS_PER_REV
 
@@ -24,6 +24,7 @@ class conversions:
         secsPerPulse=(secsPerRev/(STEPS_PER_REV*GEAR_RATIO))
         secsPerDelaymS=(secsPerPulse*microsPerSec)*0.5
         
+        print(secsPerDelaymS)
         return int(secsPerDelaymS)
     
     def toRadiansPerSecond(delay):
@@ -43,8 +44,8 @@ class conversions:
 
 
 class controller:
-    maxSpeed:float=1.58
-    minSpeed:float = conversions.toRadiansPerSecond(14000) #14000 is the max delay, and therefor min speed, anything much greater makes the stepper behave weirdly
+    maxSpeed:float=1
+    minSpeed:float = 0.02#conversions.toRadiansPerSecond(14000) #14000 is the max delay, and therefor min speed, anything much greater makes the stepper behave weirdly
 
 
     Karea:float=0.1

@@ -109,7 +109,7 @@ def main():
     PID = PIDcontroller.PIDcontroller(constants.controller.maxSpeed, constants.controller.minSpeed, 0, 0.02, 0.005)
     
     GPIO.setmode(GPIO.BOARD)
-    GPIO.setup(constants.STOP_BUTTON_PIN, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
+    GPIO.setup(constants.controller.STOP_BUTTON_PIN, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
     
 
 
@@ -170,7 +170,7 @@ def main():
 
             gun.reqRev(True)
 
-            currSpeed:float = -PID.calculate(currTarget)
+            currSpeed:float = PID.calculate(currTarget)
 
             motor.setSpeed(currSpeed)
 

@@ -128,7 +128,7 @@ class stepperMotor:
 
 def main():
         stepper:stepperMotor = stepperMotor()
-        stepper.setSpeed(0.3)
+        stepper.setSpeed(0.05)
         
         while True:
             sleep(0.01)

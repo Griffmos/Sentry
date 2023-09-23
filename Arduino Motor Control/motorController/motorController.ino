@@ -74,12 +74,12 @@ void processIncomingByte(const byte inByte) {
 
 
 //hardware constants
-int GEAR_RATIO = 1;
+long GEAR_RATIO = 10;
 
-int NUM_STEPS_IN_BIG_GEAR_REV = GEAR_RATIO*1600;
+long NUM_STEPS_IN_BIG_GEAR_REV = GEAR_RATIO*1600-1000;
 
 //extreme constants
-long MIN_DELAY = 50;
+long MIN_DELAY = 50; //usually 50
 
 long MAX_DELAY = 15000;
 
@@ -106,7 +106,7 @@ long currDelay = STOP_SPEED;
 
 int direction = 0;  //1 is clockwise, -1 is ccw, 0 is uninitialized
 
-int currPos = 0;
+long currPos = 0;
 
 bool onOff = false;
 
@@ -270,7 +270,7 @@ void loop() {
 
   
 
-  if (abs(currPos) >= NUM_STEPS_IN_BIG_GEAR_REV / 2 && (reqDirection>0) == (currPos > 0)) {
+  if (abs(currPos) >= (NUM_STEPS_IN_BIG_GEAR_REV / (long)2) && (reqDirection>0) == (currPos > 0)) {
     reqStop = true;
   }
 
@@ -308,5 +308,6 @@ void loop() {
     }
   }
     
+
     
  }

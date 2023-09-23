@@ -11,11 +11,7 @@ microsPerSec=1000000
 #little gear
 STEPS_PER_REV=1600
 
-<<<<<<< Updated upstream
-GEAR_RATIO:float=10/1
-=======
 GEAR_RATIO:float=40/1
->>>>>>> Stashed changes
 
 DEGREES_PER_STEP:float=360.0/STEPS_PER_REV
 

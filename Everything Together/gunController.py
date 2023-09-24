@@ -89,7 +89,6 @@ class Nemesis:
         
     def shutdown(self):
         self.turnOff=True
-        GPIO.cleanup()
 
 
 

@@ -11,7 +11,7 @@ microsPerSec=1000000
 #little gear
 STEPS_PER_REV=1600
 
-GEAR_RATIO:float=40/1
+GEAR_RATIO:float=10/1
 
 DEGREES_PER_STEP:float=360.0/STEPS_PER_REV
 
@@ -58,7 +58,7 @@ class controller:
     TIMES_TARGET_NONE_TO_STOP = 1
     #pixels
     SHOOTING_DISTANCE = 20 
-    STOPPING_DISTANCE = 10
+    STOPPING_DISTANCE = 5
 
 
     STOP_BUTTON_PIN = 15

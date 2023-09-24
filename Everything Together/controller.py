@@ -118,7 +118,6 @@ def main():
         tracker.terminateTracker()
         motor.terminate()
         gun.shutdown()
-        stop=True
 
     def scanRoutine():
         
@@ -182,10 +181,13 @@ def main():
             lastSpeed=currSpeed
             
         
+        
         if (GPIO.input(constants.controller.STOP_BUTTON_PIN)==GPIO.HIGH):
             print("stopping")
+            stop=True
             quit()
-            GPIO.cleanup()  
+            GPIO.cleanup()
+                
             
         print(f"speed: {motor.currSpeed}")
         

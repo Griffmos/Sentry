@@ -4,10 +4,21 @@ from ultralytics import YOLO
 import socket
 import struct
 import time
+from time import sleep
+import keyboard
 
 FRAME_BYTE_SIZE=57600
 
+TIME_OUT=5 #time out time in seconds
+
+INIT_WAIT=10 #amount of time the server waits until first recieving data
+
 MODEL= YOLO('yolov8n.pt')
+
+run=True
+
+connection=None
+
 
 def recvFrame(s:socket.socket):
     startRecv=time.perf_counter()
@@ -15,6 +26,8 @@ def recvFrame(s:socket.socket):
 
     while len(data) < FRAME_BYTE_SIZE:
         data+=s.recv(FRAME_BYTE_SIZE-len(data))
+        if (time.perf_counter()-startRecv>TIME_OUT):
+            return False
 
     # print(bP)
     frame = numpy.asarray(data,numpy.uint8)
@@ -43,6 +56,15 @@ def sendTarget(s:socket.socket, target):
     print(f"send target time: {time.perf_counter()-startSend}")
 
 
+def quit():    
+
+    print("tried to quit")
+    global run
+    run = False
+
+
+keyboard.add_hotkey("q",quit)
+
 def runServer():
     print()
     s=socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -54,8 +76,10 @@ def runServer():
 
     conn,address = s.accept()
     print(f"Connection from {address} worked!")
+    sleep(INIT_WAIT)
+    print("wait over")
 
-    while True:
+    while run:
         startTime=time.perf_counter()
         try:
             frame = recvFrame(conn)
@@ -63,6 +87,9 @@ def runServer():
             print("error on recv, restaring")
             print(f"error: {error}")
 
+            return -1
+        if (type(frame) is not numpy.ndarray):
+            print("client timed out, restarting")
             return -1
         recvTime=time.perf_counter()
         
@@ -81,7 +108,7 @@ def runServer():
                 target=[[x,y], boxPos[0].tolist()]
         sendTime=time.perf_counter()
         try:
-            sendTarget(conn, target)
+            sendTarget(conn,target)
         except Exception as error:
             print(f"error on send, restaring")
             print(f"error: {error}")
@@ -90,7 +117,9 @@ def runServer():
         print(f"process time: {sendTime-recvTime}")
         print(f"total time: {time.perf_counter()-startTime}")
         
-            
+    print("shutdown from server, restarting")
+    conn.sendall(bytearray([1,1,1,1,1,1,1,1,1,1,1,1]))
+    return -1
 
 
 def main():

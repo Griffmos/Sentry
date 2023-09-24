@@ -112,12 +112,19 @@ class tracker:
         
 
         isNone:bool=True
+        stopReq:bool=True
 
         for byte in bytes_in:
             if (numpy.int8(byte)!=0):
                 isNone=False
+            if (numpy.int8(byte)!=1):
+                stopReq=False
+            if (not isNone and not stopReq):
                 break
         
+        
+        if (stopReq):
+            return False
         if (isNone):
             self.currTarget=None
         else:
@@ -131,17 +138,16 @@ class tracker:
 
             self.currTarget= [[x,y],[llx,lly,urx,ury]]
         # ~ print(f"recv target time: {time.perf_counter()-startRecv}")
+        return True
 
     def findTarget(self):
         if (self.currFrame is not None):
             # ~ startFinding=time.perf_counter()
             self.sendFrame()
 
-            self.recieveTarget()
+            
             # ~ print(f"find time: {time.perf_counter()-startFinding}")
-            return True
-        else:
-            return False
+            return self.recieveTarget()
 
 
     def terminateTracker(self):

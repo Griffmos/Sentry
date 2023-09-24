@@ -147,6 +147,13 @@ def main():
     while not stop:
         startTime=time.perf_counter()
         success=tracker.findTarget()
+        
+        if not success:
+            print("stop request from server")
+            stop=True
+            quit()
+            GPIO.cleanup()
+            break
 
     
         
@@ -183,13 +190,15 @@ def main():
         
         
         if (GPIO.input(constants.controller.STOP_BUTTON_PIN)==GPIO.HIGH):
-            print("stopping")
+            print("stop request from button")
             stop=True
             quit()
             GPIO.cleanup()
                 
             
         print(f"speed: {motor.currSpeed}")
+        
+    print("shutdown for some reason")
         
         
 

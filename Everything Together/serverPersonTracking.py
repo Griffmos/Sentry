@@ -66,6 +66,9 @@ def quit():
 keyboard.add_hotkey("q",quit)
 
 def runServer():
+
+    global run
+    
     print()
     s=socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     s.bind(('',8888))
@@ -119,6 +122,7 @@ def runServer():
         
     print("shutdown from server, restarting")
     conn.sendall(bytearray([1,1,1,1,1,1,1,1,1,1,1,1]))
+    run = True
     return -1
 
 

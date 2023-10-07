@@ -63,8 +63,9 @@ class stepperMotor:
         return int.from_bytes(self.arduino.read()+self.arduino.read(),"big",signed=True)
 
     def terminate(self):
-         self.arduino.write('q'.encode())
-         self.arduino.write('\n'.encode())
+         self.setSpeed(0)
+         # ~ self.arduino.write('q'.encode())
+         # ~ self.arduino.write('\n'.encode())
 
     
 

@@ -52,40 +52,41 @@ class tracker:
 
 
             success, frame = self.cap.read()
+            if success:
 
-            frame = cv2.resize(frame, (160,120), interpolation=cv2.INTER_AREA)
+                frame = cv2.resize(frame, (160,120), interpolation=cv2.INTER_AREA)
 
-            self.currFrame=frame
-
-            
-            for i in range(len(self.points)):
-                if (len(self.points)>i):
-                    currPoint = self.points[i]
-                    if (currPoint[2]<maxPointLoops):
-                        currPoint[2]+=1
-                        x=currPoint[0]
-                        y=currPoint[1]
-                        for r in range(int(max(0,y-5)), int(min(len(self.currFrame),y+5))):
-                            for c in range(int(max(0,x-5)), int(min(len(self.currFrame),x+5))):
-                                self.currFrame[r][c]=[0,255,0]
-                    else:
-                        self.points.pop(i)
-
-            if (self.currTarget is not None and (len(self.currTarget))>0):
-                 
-                targetPoint=self.currTarget[0]
-        
-                for r in range(int(max(0,targetPoint[1]-5)), int(min(len(self.currFrame),targetPoint[1]+5))):
-                    for c in range(int(max(0,targetPoint[0]-5)), int(min(len(self.currFrame),targetPoint[0]+5))):
-                        self.currFrame[r][c]=[255,0,0]
+                self.currFrame=frame
 
                 
+                for i in range(len(self.points)):
+                    if (len(self.points)>i):
+                        currPoint = self.points[i]
+                        if (currPoint[2]<maxPointLoops):
+                            currPoint[2]+=1
+                            x=currPoint[0]
+                            y=currPoint[1]
+                            for r in range(int(max(0,y-5)), int(min(len(self.currFrame),y+5))):
+                                for c in range(int(max(0,x-5)), int(min(len(self.currFrame),x+5))):
+                                    self.currFrame[r][c]=[0,255,0]
+                        else:
+                            self.points.pop(i)
 
-            if (self.currFrame is not None and self.showFeed==True):
-                cv2.imshow('currFrame', self.currFrame)
+                if (self.currTarget is not None and (len(self.currTarget))>0):
+                     
+                    targetPoint=self.currTarget[0]
+            
+                    for r in range(int(max(0,targetPoint[1]-5)), int(min(len(self.currFrame),targetPoint[1]+5))):
+                        for c in range(int(max(0,targetPoint[0]-5)), int(min(len(self.currFrame),targetPoint[0]+5))):
+                            self.currFrame[r][c]=[255,0,0]
 
-            if cv2.waitKey(1) & 0xFF == ord('q'):
-                self.terminateTracker()
+                    
+
+                if (self.currFrame is not None and self.showFeed==True):
+                    cv2.imshow('currFrame', self.currFrame)
+
+                if cv2.waitKey(1) & 0xFF == ord('q'):
+                    self.terminateTracker()
 
 
     def startFeed(self):
@@ -108,7 +109,10 @@ class tracker:
         bytes_in : bytes = []
 
         while len(bytes_in)<12:
-            bytes_in += self.socket.recv(12-len(bytes_in))
+            try:
+                bytes_in += self.socket.recv(12-len(bytes_in))
+            except:
+                return False
         
 
         isNone:bool=True
@@ -143,7 +147,10 @@ class tracker:
     def findTarget(self):
         if (self.currFrame is not None):
             # ~ startFinding=time.perf_counter()
-            self.sendFrame()
+            try:
+                self.sendFrame()
+            except:
+                return False
 
             
             # ~ print(f"find time: {time.perf_counter()-startFinding}")
@@ -151,6 +158,8 @@ class tracker:
 
 
     def terminateTracker(self):
+        self.currFrame=None
+        self.currTarget=None
         self.cap.release()
         cv2.destroyAllWindows()
 

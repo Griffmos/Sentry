@@ -23,7 +23,7 @@ def setStop(val:bool):
 
 def main():
 
-    tracker = clientPersonTracking.tracker(True, '192.168.1.96', 8888) #.43 for desktop, .96 for laptop
+    tracker = clientPersonTracking.tracker(False, '192.168.1.96', 8888) #.43 for desktop, .96 for laptop
     motor = RPiMotorController.stepperMotor()
     gun = gunController.Nemesis() 
     PID = PIDcontroller.PIDcontroller(constants.controller.maxSpeed, constants.controller.minSpeed, 0, 0.02, 0.005)
@@ -34,8 +34,10 @@ def main():
 
 
     def quit():
-        tracker.terminateTracker()
         motor.terminate()
+        sleep(0.01)
+        tracker.terminateTracker()
+        sleep(0.01)
         gun.shutdown()
 
     def checkButton():
@@ -49,19 +51,25 @@ def main():
 
     def scanRoutine():
         
-        dir:int = 1
+        dir:int = -1
         
         while tracker.currTarget is None and not getStop():
-            # ~ print(motor.getPos())
+            print(motor.getPos())
             # ~ print(f"end: {constants.GEAR_RATIO*constants.STEPS_PER_REV*0.9*0.5}")
             # ~ print()
 
             if abs(motor.getPos())>=0.9*0.5*constants.GEAR_RATIO*constants.STEPS_PER_REV:
                 dir = -dir
-            
-            motor.setSpeed(dir*constants.controller.minSpeed)
+                motor.setSpeed(dir*0.10)
+                sleep(0.1)
 
+            
+            motor.setSpeed(dir*0.10)
+            
             success=tracker.findTarget()
+            if not success:
+                setStop(True)
+                quit()
 
 
 
@@ -122,7 +130,8 @@ def main():
             lastSpeed=currSpeed
                 
             
-        print(f"speed: {motor.currSpeed}")
+        # ~ print(f"speed: {motor.currSpeed}")
+        print(f"pos: {motor.getPos()}")
         
     print("shutdown for some reason")
         

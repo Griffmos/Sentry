@@ -11,95 +11,15 @@ from threading import Thread
 import gunController
 
 
-# ~ Kdamp:float=0.3
+STOP = False
 
-
-
-
-
-
-# def calcSpeed(currTarget:list):
-
-#     if (currTarget is None):
-#         return 0
-
-
-#     #distance term
-#     target:list=currTarget[0]
+def getStop():
+    global STOP
+    return STOP
+def setStop(val:bool):
+    global STOP
+    STOP = val
     
-
-#     distFromTarget = (constants.SCREEN_WIDTH/2)-target[0]
-    
-#     direction = 1 if distFromTarget<1 else -1
-    
-#     distFromTarget = abs(distFromTarget)
-    
-#     print(distFromTarget)
-
-#     if (distFromTarget<STOPPING_DISTANCE):
-#         return 0
-    
-
-#     distCoeff=Kdist*(distFromTarget/(constants.SCREEN_WIDTH/2))
-
-    
-    
-#     #area term
-#     box:list = currTarget[1]
-
-#     area:float=(box[2]-box[0])*(box[3]-box[1])
-
-#     areaCoeff= Karea*((maxArea-area)/maxArea)
-    
-    
-    
-#     #error term
-#     errorCoeff = Kerror * (distFromTarget)/((calcSpeed.lastError) if calcSpeed.lastError !=0 else distFromTarget)
-
-
-#     #print(f"last error: {calcSpeed.lastError}")
-
-    
-#     # ~ print(distCoeff)
-#     # ~ print(errorCoeff)
-#     # ~ print(areaCoeff)
-    
-
-#     multiplier = distCoeff+errorCoeff+areaCoeff
-
-#     multiplier = min(multiplier, 1)
-    
-#     # ~ print(multiplier)
-
-    
-#     #dampening term (not using)
-#     # ~ speedDiff=abs(lastSpeed-speed)
-    
-#     # ~ dampeningCoeff = Kdamp/(Kdamp if speedDiff==0 else speedDiff)
-    
-#     # ~ print(f"speedDiff: {speedDiff}")
-    
-#     # ~ print(f"dampeningCoeff: {dampeningCoeff}")
-    
-#     # ~ speed = speed * (1 if dampeningCoeff>1 else dampeningCoeff)
-
-#     speed = maxSpeed*multiplier
-    
-#     print(f"speed: {speed}")
-#     print(f"multiplier: {multiplier}")
-#     print(f"direction: {direction}")
-
-#     calcSpeed.lastError = distFromTarget
-#     return direction*max(speed,minSpeed)
-
-#     #print(distFromTarget)
-
-
-
-
-
-
-
 
 def main():
 
@@ -113,17 +33,17 @@ def main():
     
 
 
-    stop=False
     def quit():
         tracker.terminateTracker()
         motor.terminate()
         gun.shutdown()
 
     def checkButton():
-        global stop
-        if (GPIO.input(constants.controller.STOP_BUTTON_PIN)==GPIO.HIGH):
+        
+        while not getStop():
+            if (GPIO.input(constants.controller.STOP_BUTTON_PIN)==GPIO.HIGH):
                 print("stop request from button")
-                stop=True
+                setStop(True)
                 quit()
                 GPIO.cleanup()
 
@@ -131,9 +51,12 @@ def main():
         
         dir:int = 1
         
-        while tracker.currTarget is None and not stop:
+        while tracker.currTarget is None and not getStop():
+            # ~ print(motor.getPos())
+            # ~ print(f"end: {constants.GEAR_RATIO*constants.STEPS_PER_REV*0.9*0.5}")
+            # ~ print()
 
-            if abs(motor.getPos())>=0.9*constants.GEAR_RATIO*constants.STEPS_PER_REV:
+            if abs(motor.getPos())>=0.9*0.5*constants.GEAR_RATIO*constants.STEPS_PER_REV:
                 dir = -dir
             
             motor.setSpeed(dir*constants.controller.minSpeed)
@@ -154,13 +77,13 @@ def main():
     noneCounter = 0
     lastSpeed = 0
     
-    while not stop:
+    while not getStop():
         startTime=time.perf_counter()
         success=tracker.findTarget()
         
         if not success:
             print("stop request from server")
-            stop=True
+            setStop(True)
             quit()
             GPIO.cleanup()
             break

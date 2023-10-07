@@ -34,7 +34,6 @@ def recvFrame(s:socket.socket):
     frame = numpy.reshape(frame, [120, 160, 3])
 
     print(f"recv frame time: {time.perf_counter()-startRecv}")
-
     return frame
 
 def sendTarget(s:socket.socket, target):
@@ -79,6 +78,8 @@ def runServer():
 
     conn,address = s.accept()
     print(f"Connection from {address} worked!")
+    run = True
+
     sleep(INIT_WAIT)
     print("wait over")
 
@@ -122,7 +123,6 @@ def runServer():
         
     print("shutdown from server, restarting")
     conn.sendall(bytearray([1,1,1,1,1,1,1,1,1,1,1,1]))
-    run = True
     return -1
 
 

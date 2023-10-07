@@ -119,11 +119,19 @@ def main():
         motor.terminate()
         gun.shutdown()
 
+    def checkButton():
+        global stop
+        if (GPIO.input(constants.controller.STOP_BUTTON_PIN)==GPIO.HIGH):
+                print("stop request from button")
+                stop=True
+                quit()
+                GPIO.cleanup()
+
     def scanRoutine():
         
         dir:int = 1
         
-        while tracker.currTarget is None:
+        while tracker.currTarget is None and not stop:
 
             if abs(motor.getPos())>=0.9*constants.GEAR_RATIO*constants.STEPS_PER_REV:
                 dir = -dir
@@ -133,10 +141,12 @@ def main():
             success=tracker.findTarget()
 
 
-            
 
         return True
 
+    runButton = Thread(target=checkButton)
+
+    runButton.start()
 
 
     #keyboard.add_hotkey('q', quit)
@@ -171,6 +181,7 @@ def main():
                 motor.setSpeed(0)
                 gun.reqShoot(False)
                 gun.reqRev(False)
+                scanRoutine()
         else:
             noneCounter = 0
 
@@ -186,14 +197,6 @@ def main():
                 gun.reqShoot(False)
 
             lastSpeed=currSpeed
-            
-        
-        
-        if (GPIO.input(constants.controller.STOP_BUTTON_PIN)==GPIO.HIGH):
-            print("stop request from button")
-            stop=True
-            quit()
-            GPIO.cleanup()
                 
             
         print(f"speed: {motor.currSpeed}")

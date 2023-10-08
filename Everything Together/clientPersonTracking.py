@@ -128,6 +128,7 @@ class tracker:
         
         
         if (stopReq):
+            print("recieved a stop request")
             return False
         if (isNone):
             self.currTarget=None
@@ -150,11 +151,13 @@ class tracker:
             try:
                 self.sendFrame()
             except:
+                print("Issue sending")
                 return False
 
             
             # ~ print(f"find time: {time.perf_counter()-startFinding}")
             return self.recieveTarget()
+        return True
 
 
     def terminateTracker(self):

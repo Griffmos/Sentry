@@ -103,7 +103,7 @@ def main():
 
         currTarget = tracker.currTarget
         print(f"currTarget: {currTarget}")
-        if (currTarget is None):
+        if (currTarget is None or len(currTarget)==0):
             PID.lastError = -1
             if (noneCounter<constants.controller.TIMES_TARGET_NONE_TO_STOP):
                 noneCounter+=1

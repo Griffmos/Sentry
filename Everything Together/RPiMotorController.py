@@ -131,8 +131,8 @@ def main():
     stepper.setSpeed(0.05)
 
     for x in range(10):
-    	sleep(0.01)
-    	print(stepper.getPos())
+        sleep(0.01)
+        print(stepper.getPos())
     stepper.setSpeed(0)
     print(stepper.getPos())
 

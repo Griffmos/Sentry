@@ -11,7 +11,7 @@ FRAME_BYTE_SIZE=57600
 
 TIME_OUT=5 #time out time in seconds
 
-INIT_WAIT=10 #amount of time the server waits until first recieving data
+INIT_WAIT=15 #amount of time the server waits until first recieving data
 
 MODEL= YOLO('yolov8n.pt')
 

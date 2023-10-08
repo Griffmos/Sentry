@@ -44,17 +44,16 @@ class conversions:
 
 
 class controller:
-    maxSpeed:float=1
+    maxSpeed:float=3.14
     minSpeed:float = 0.02#conversions.toRadiansPerSecond(14000) #14000 is the max delay, and therefor min speed, anything much greater makes the stepper behave weirdly
     scanSpeed:float = 0.5
 
     NONE_TARGET_SPEED_DIVISOR = 2
-    TIMES_TARGET_NONE_TO_STOP = 2
+    TIMES_TARGET_NONE_TO_STOP = 4
     #pixels
-    SHOOTING_DISTANCE = 20 
-    STOPPING_DISTANCE = 5
+    SHOOTING_DISTANCE = 15 
+    STOPPING_DISTANCE = 2
+    OFFSET=5
 
-
-    STOP_BUTTON_PIN = 15
-    
+    STOP_BUTTON_PIN = 15    
 

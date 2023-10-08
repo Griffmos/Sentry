@@ -23,7 +23,7 @@ def setStop(val:bool):
 
 def main():
 
-    tracker = clientPersonTracking.tracker(False, '192.168.1.96', 8888) #.43 for desktop, .96 for laptop
+    tracker = clientPersonTracking.tracker(False, '10.0.0.114', 8888) #.43 for desktop, .96 for laptop
     motor = RPiMotorController.stepperMotor()
     gun = gunController.Nemesis() 
     PID = PIDcontroller.PIDcontroller(constants.controller.maxSpeed, constants.controller.minSpeed, 0, 0.02, 0.005)
@@ -61,7 +61,7 @@ def main():
             if abs(motor.getPos())>=0.9*0.5*constants.GEAR_RATIO*constants.STEPS_PER_REV:
                 scanRoutine.dir = -scanRoutine.dir
                 motor.setSpeed(scanRoutine.dir*constants.controller.scanSpeed)
-                sleep(0.1)
+                sleep(0.15)
 
             
             motor.setSpeed(scanRoutine.dir*constants.controller.scanSpeed)
@@ -114,6 +114,7 @@ def main():
                 gun.reqRev(False)
                 scanRoutine()
         else:
+            currTarget[0][0] = currTarget[0][0]+constants.controller.OFFSET
             noneCounter = 0
 
             gun.reqRev(True)

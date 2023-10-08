@@ -51,7 +51,7 @@ def main():
 
     def scanRoutine():
         
-        dir:int = -1
+         
         
         while tracker.currTarget is None and not getStop():
             print(motor.getPos())
@@ -59,12 +59,12 @@ def main():
             # ~ print()
 
             if abs(motor.getPos())>=0.9*0.5*constants.GEAR_RATIO*constants.STEPS_PER_REV:
-                dir = -dir
-                motor.setSpeed(dir*0.10)
+                scanRoutine.dir = -scanRoutine.dir
+                motor.setSpeed(scanRoutine.dir*constants.controller.scanSpeed)
                 sleep(0.1)
 
             
-            motor.setSpeed(dir*0.10)
+            motor.setSpeed(scanRoutine.dir*constants.controller.scanSpeed)
             
             success=tracker.findTarget()
             if not success:
@@ -74,7 +74,7 @@ def main():
 
 
         return True
-
+    scanRoutine.dir=-1
     runButton = Thread(target=checkButton)
 
     runButton.start()

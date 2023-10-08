@@ -46,16 +46,10 @@ class conversions:
 class controller:
     maxSpeed:float=1
     minSpeed:float = 0.02#conversions.toRadiansPerSecond(14000) #14000 is the max delay, and therefor min speed, anything much greater makes the stepper behave weirdly
-
-
-    Karea:float=0.1
-
-    Kdist:float=0.2
-
-    Kerror:float=0.1    
+    scanSpeed:float = 0.5
 
     NONE_TARGET_SPEED_DIVISOR = 2
-    TIMES_TARGET_NONE_TO_STOP = 1
+    TIMES_TARGET_NONE_TO_STOP = 2
     #pixels
     SHOOTING_DISTANCE = 20 
     STOPPING_DISTANCE = 5

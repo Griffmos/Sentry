@@ -23,10 +23,10 @@ def setStop(val:bool):
 
 def main():
 
-    tracker = clientPersonTracking.tracker(False, '10.0.0.114', 8888) #.43 for desktop, .96 for laptop
+    tracker = clientPersonTracking.tracker(False, '169.254.229.169', 8888) #DAD's HOUSE .43 for desktop, .96 for laptop
     motor = RPiMotorController.stepperMotor()
     gun = gunController.Nemesis() 
-    PID = PIDcontroller.PIDcontroller(constants.controller.maxSpeed, constants.controller.minSpeed, 0, 0.02, 0.005)
+    PID = PIDcontroller.PIDcontroller(constants.controller.maxSpeed, constants.controller.minSpeed, 0, constants.controller.kP, constants.controller.kD)
     
     GPIO.setmode(GPIO.BOARD)
     GPIO.setup(constants.controller.STOP_BUTTON_PIN, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)

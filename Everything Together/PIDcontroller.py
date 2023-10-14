@@ -12,6 +12,7 @@ class PIDcontroller:
         self.kD = kD
 
         self.lastError=-1
+        self.lastDeltaError=-1
 
     
     def calculate(self, currTarget):
@@ -24,7 +25,7 @@ class PIDcontroller:
 
         P=self.calcP(error)
 
-        D=self.calcD(error, self.lastError)
+        D=self.calcD(error)
         
 
 
@@ -48,5 +49,10 @@ class PIDcontroller:
     def calcP(self, error):
         return self.kP * error
     
-    def calcD(self, error, lastError):
-        return self.kD * (error-lastError) if (self.lastError!=-1) else 0
+    def calcD(self, error):
+        if (self.lastError==-1):
+	        return 0
+        currDeltaError=error-self.lastError
+        kCoeff=self.kD * (currDeltaError-self.lastDeltaError) if (self.lastDeltaError!=-1) else 0
+        self.lastDeltaError=currDeltaError
+        return kCoeff

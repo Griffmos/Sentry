@@ -2,7 +2,6 @@
 #https://stackoverflow.com/questions/24423162/how-to-send-an-array-over-a-socket-in-python
 #https://www.pythonclear.com/errors/connectionrefusederror-errno-111-connection-refused/#:~:text=The%20ConnectionRefusedError%20errno%20111%20connection%20refused%20is%20generated%20when%20the,that%20needed%20to%20be%20connected.
 
-
 import socket
 import time
 from threading import Timer
@@ -13,7 +12,7 @@ import pickle
 
 
 s=socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-s.bind(('',5233))
+s.bind(('',2500))
 s.listen(1)
 print("server runnig")
 print(s.getsockname())
@@ -42,7 +41,7 @@ while True:
     print(count)
 
 
-    connection.send(data)
+    #connection.send(data)
 
     if not data: break
 

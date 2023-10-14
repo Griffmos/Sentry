@@ -48,7 +48,7 @@ def init(sF:bool):
 
 
     global cap
-    cap = cv2.VideoCapture(0)
+    cap = cv2.VideoCapture(0, cv2.CAP_DSHOW)
 
     global currFrame
     currFrame=None
@@ -58,7 +58,7 @@ def init(sF:bool):
 
        
     global points
-    points:list=[]
+    points=[]
 
     global currTarget
 
@@ -71,9 +71,11 @@ def init(sF:bool):
 
 def findTarget(frame):
 
+    global currFrame
+
     results = MODEL.track(frame, persist=True, classes=0, conf=0.70 )
 
-    target=-1
+    target=[]
     if (len(results)>0):
         boxes = getattr(results[0],'boxes')
 
@@ -84,6 +86,8 @@ def findTarget(frame):
             x=(boxPos[0][0].item()+boxPos[0][2].item())/2
             y=(boxPos[0][1].item()+boxPos[0][3].item())/2
             target=[x,y]
+
+    currFrame = results[0].plot()
 
     return target
 
@@ -105,6 +109,7 @@ def runTracker():
 
 
             success, frame = cap.read()
+            
             if success:
 
                 frame = cv2.resize(frame, (160,120), interpolation=cv2.INTER_AREA)
@@ -135,14 +140,15 @@ def runTracker():
                         for c in range(int(max(0,targetPoint[0]-5)), int(min(len(currFrame),targetPoint[0]+5))):
                             currFrame[r][c]=[255,0,0]
 
-                    
+            if cv2.waitKey(1) & 0xFF == ord("q"):
+                break
 
-                if (currFrame is not None and showFeed==True):
-                    cv2.imshow('currFrame', currFrame)
+            if (currFrame is not None and showFeed==True):
+                cv2.imshow('currFrame', currFrame)
 
 
 
-def startTracking(self):
+def startTracking():
         print("called startfeed")
         feed = threading.Thread(target=runTracker)
 
@@ -210,12 +216,12 @@ def runServer():
         
         
     print("shutdown from server, restarting")
-    conn.sendall(bytearray([1,1,1,1,1,1,1,1,1,1,1,1]))
+    conn.sendall(bytearray([1,1]))
     return -1
 
 
 def main():
-    init()
+    init(True)
     while True:
         runServer()
 

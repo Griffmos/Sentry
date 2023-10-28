@@ -76,7 +76,7 @@ void processIncomingByte(const byte inByte) {
 //hardware constants
 long GEAR_RATIO = 10;
 
-long NUM_STEPS_IN_BIG_GEAR_REV = GEAR_RATIO*1600-1000;
+long NUM_STEPS_IN_BIG_GEAR_REV = GEAR_RATIO*1600*0.5;
 
 //extreme constants
 long MIN_DELAY = 50; //usually 50

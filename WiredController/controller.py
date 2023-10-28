@@ -58,7 +58,7 @@ def main():
             # ~ print(f"end: {constants.GEAR_RATIO*constants.STEPS_PER_REV*0.9*0.5}")
             # ~ print()
 
-            if abs(motor.getPos())>=0.9*0.5*constants.GEAR_RATIO*constants.STEPS_PER_REV:
+            if abs(motor.getPos())>=0.5*0.5*constants.GEAR_RATIO*constants.STEPS_PER_REV:
                 scanRoutine.dir = -scanRoutine.dir
                 motor.setSpeed(scanRoutine.dir*constants.controller.scanSpeed)
                 sleep(0.2)

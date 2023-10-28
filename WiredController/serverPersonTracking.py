@@ -7,12 +7,13 @@ import struct
 import time
 from time import sleep
 import keyboard
+import graphingUtility
 
 #FRAME_BYTE_SIZE=57600
 
 #TIME_OUT=5 #time out time in seconds
 
-INIT_WAIT=15 #amount of time the server waits until first recieving data
+INIT_WAIT=2 #amount of time the server waits until first recieving data
 
 MODEL= YOLO('yolov8n.pt')
 
@@ -31,6 +32,8 @@ points = None
 
 currTarget = None
 currFrame=None
+
+graph = None
 
 def quit():    
 
@@ -64,6 +67,11 @@ def init(sF:bool):
 
     currTarget=[]
 
+    #global graph
+
+    #graph = graphingUtility.graph() 
+
+
 
 
     startTracking()
@@ -73,7 +81,7 @@ def findTarget(frame):
 
     global currFrame
 
-    results = MODEL.track(frame, persist=True, classes=0, conf=0.70 )
+    results = MODEL.track(frame, persist=True, classes=0, conf=0.70, verbose = False)
 
     target=[]
     if (len(results)>0):
@@ -161,11 +169,11 @@ def startTracking():
 def sendTarget(s:socket.socket, target):
     startSend=time.perf_counter()
     print(target)
-    if (type(target) is not list):
-        s.sendall(bytearray([0,0]))
+    if (type(target) is not list or len(target)==0):
+        s.sendall(bytearray([0,0,0,0]))
     else:
-        xcoord = struct.pack('>H', int(target[0][0]))
-        ycoord = struct.pack('>H', int(target[0][1]))
+        xcoord = struct.pack('>H', int(target[0]))
+        ycoord = struct.pack('>H', int(target[1]))
 
         s.sendall(xcoord+ycoord)
     print(f"send target time: {time.perf_counter()-startSend}")
@@ -176,7 +184,7 @@ def parseTargetRequest(s:socket.socket):
     data:bytes = []
 
     while len(data) == 0:
-        data+=s.recv(4096)
+        data+=s.recv(1)
     return True
 
 
@@ -184,6 +192,7 @@ def runServer():
 
     global run
     global currTarget
+    #global graph
     
     print()
     s=socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -202,21 +211,26 @@ def runServer():
 
     while run:
         
-        parseTargetRequest()
+        parseTargetRequest(conn)
 
         sendTime=time.perf_counter()
 
 
         try:
             sendTarget(conn,currTarget)
+            
         except Exception as error:
             print(f"error on send, restaring")
             print(f"error: {error}")
             return -1
-        
+        #graph.putError(currTarget)
+
         
     print("shutdown from server, restarting")
-    conn.sendall(bytearray([1,1]))
+    conn.sendall(bytearray([1,1,1,1]))
+
+    #graph.reset()
+    
     return -1
 
 

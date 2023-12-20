@@ -15,7 +15,7 @@ while cap.isOpened():
     # Read a frame from the video
     success, frame = cap.read()
 
-    frame = cv2.resize(frame, (160, 120), interpolation=cv2.INTER_AREA)
+    frame = cv2.resize(frame, (640, 480), interpolation=cv2.INTER_AREA)
 
     print(len(bytearray(frame)))
 

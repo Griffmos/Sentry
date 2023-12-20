@@ -169,14 +169,14 @@ def startTracking():
 def sendTarget(s:socket.socket, target):
     startSend=time.perf_counter()
     print(target)
-    if (type(target) is not list or len(target)==0):
+    if (target == None or len(target)==0):
         s.sendall(bytearray([0,0,0,0]))
     else:
         xcoord = struct.pack('>H', int(target[0]))
         ycoord = struct.pack('>H', int(target[1]))
 
         s.sendall(xcoord+ycoord)
-    print(f"send target time: {time.perf_counter()-startSend}")
+    print(f"send target time : {time.perf_counter()-startSend}")
 
 
 def parseTargetRequest(s:socket.socket):

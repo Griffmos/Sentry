@@ -23,7 +23,7 @@ def setStop(val:bool):
 
 def main():
 
-    tracker = clientPersonTracking.tracker(False, '169.254.229.169', 8888) #DAD's HOUSE .43 for desktop, .96 for laptop
+    tracker = clientPersonTracking.Tracker(False, '169.254.229.169', 8888) #DAD's HOUSE .43 for desktop, .96 for laptop
     motor = RPiMotorController.stepperMotor()
     gun = gunController.Nemesis() 
     PID = PIDcontroller.PIDcontroller(constants.controller.maxSpeed, constants.controller.minSpeed, 0, constants.controller.kP, constants.controller.kD)
@@ -75,9 +75,9 @@ def main():
 
         return True
     scanRoutine.dir=-1
-    runButton = Thread(target=checkButton)
+    # runButton = Thread(target=checkButton)
 
-    runButton.start()
+    # runButton.start()
 
 
     #keyboard.add_hotkey('q', quit)

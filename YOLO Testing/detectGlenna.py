@@ -6,7 +6,7 @@ model = YOLO("yolov8m.pt")
 
 
 # from ndarray
-im2 = cv2.imread("C:\\Users\\griff\\OneDrive\\Documents\\Coding\\Sentry\\Images\\lulu.jpg")
+im2 = cv2.imread("C:\\Users\\griff\\OneDrive\\Documents\\Coding\\Sentry\\Images\\Glenna.jpg")
 results = model.predict(source=im2, save=True, save_txt=True)  # save predictions as labels
 
 # from list of PIL/ndarray

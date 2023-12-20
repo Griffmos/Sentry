@@ -5,13 +5,15 @@ import socket
 from time import sleep
 import time
 
+IPT = str
+
+PRTT = int
 
 
+class Tracker:
 
-class tracker:
 
-
-    def __init__(self, showFeed:bool, IP, PORT):
+    def __init__(self, showFeed:bool, IP: IPT, PORT: PRTT):
         print("inited tracker")
 
         self.currTarget=[]
